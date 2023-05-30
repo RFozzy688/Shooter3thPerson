@@ -2,6 +2,7 @@
 
 
 #include "ShooterCharacter.h"
+#include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -9,6 +10,11 @@ AShooterCharacter::AShooterCharacter()
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
+    // создаЄт объект CameraBoom (подт€гиваетс€ к персонажу при столкновении)
+    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+    CameraBoom->SetupAttachment(RootComponent);
+    CameraBoom->TargetArmLength = 300.f; // длина селфи-палки
+    CameraBoom->bUsePawnControlRotation = true; // использует вращение пешки
 }
 
 // Called when the game starts or when spawned
@@ -16,21 +22,6 @@ void AShooterCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
-    UE_LOG(LogTemp, Warning, TEXT("BeginPlay() called"));
-    
-    int val{ 22 };
-
-    UE_LOG(LogTemp, Warning, TEXT("val: %d"), val);
-
-    double myDouble{ 0.0025596 };
-    char myChar{ 'A' };
-    wchar_t myWideChar{ L'A' };
-
-    UE_LOG(LogTemp, Warning, TEXT("double: %.4lf, char: %c, wchar: %lc"), myDouble, myChar, myWideChar);
-
-    FString myStrint{ "my first string in UE" };
-    UE_LOG(LogTemp, Warning, TEXT("myString: %s"), *myStrint);
-    UE_LOG(LogTemp, Warning, TEXT("name of instance: %s"), *GetName());
 }
 
 // Called every frame

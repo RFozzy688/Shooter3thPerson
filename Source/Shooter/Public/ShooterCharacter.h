@@ -26,4 +26,14 @@ public:
     // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+
+    // селфи-палка которая держит камеру за игроком и следует за ним
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"));
+    class USpringArmComponent* CameraBoom;
+
+public:
+
+    FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
 };
