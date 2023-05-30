@@ -5,7 +5,7 @@
 #include "ShooterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-void UShooterAnimInstance::UpdateAnimationProperties()
+void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 {
     if (ShooterCharacter == nullptr)
     {
@@ -13,9 +13,9 @@ void UShooterAnimInstance::UpdateAnimationProperties()
     }
     if (ShooterCharacter)
     {
-        // ѕолучить боковую скорость персонажа из скорости
+        // ѕолучить горизонтальную скорость персонажа из скорости
         FVector Velocity{ ShooterCharacter->GetVelocity() };
-        Velocity.Z = 0;
+        Velocity.Z = 0; // это не будет вли€ть на скорость если персонаж летит вверх или падает вниз
         Speed = Velocity.Size();
 
         // ѕерсонаж в воздухе?

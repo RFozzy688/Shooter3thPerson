@@ -16,9 +16,11 @@ class SHOOTER_API UShooterAnimInstance : public UAnimInstance
     
 public:
 
+    // работает как тик и вызывается в каждом кадре из анимационного блюпринта
     UFUNCTION(BlueprintCallable)
-    void UpdateAnimationProperties();
+    void UpdateAnimationProperties(float DeltaTime);
 
+    // подобна BeginPlay() для акторов
     virtual void NativeInitializeAnimation() override;
 
 private:
