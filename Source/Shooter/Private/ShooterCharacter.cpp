@@ -40,6 +40,26 @@ void AShooterCharacter::Tick(float DeltaTime)
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
+    check(PlayerInputComponent);
 
+    PlayerInputComponent->BindAxis("MoveForward", this, &AShooterCharacter::MoveForward);
+    PlayerInputComponent->BindAxis("MoveRight", this, &AShooterCharacter::MoveRight);
+
+}
+
+void AShooterCharacter::MoveForward(float Amount)
+{
+    if (Controller && Amount)
+    {
+        AddMovementInput(GetActorForwardVector(), Amount);
+    }
+}
+
+void AShooterCharacter::MoveRight(float Amount)
+{
+    if (Controller && Amount)
+    {
+        AddMovementInput(GetActorRightVector(), Amount);
+    }
 }
 
