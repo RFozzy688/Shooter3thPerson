@@ -48,6 +48,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     PlayerInputComponent->BindAxis("TurnAround", this, &AShooterCharacter::TurnAround);
     PlayerInputComponent->BindAxis("LookUp", this, &AShooterCharacter::LookUp);
 
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+    PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
 }
 
 void AShooterCharacter::MoveForward(float Amount)
