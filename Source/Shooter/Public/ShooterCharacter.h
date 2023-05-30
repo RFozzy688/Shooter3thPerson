@@ -35,11 +35,13 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* FollowCamera;
 
+    void MoveForward(float Amount);
+    void MoveRight(float Amount);
+    void TurnAround(float Amount);
+    void LookUp(float Amount);
+
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-    void MoveForward(float Amount);
-    void MoveRight(float Amount);
 };
