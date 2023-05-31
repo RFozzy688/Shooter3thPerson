@@ -35,13 +35,28 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* FollowCamera;
 
-    void MoveForward(float Amount);
-    void MoveRight(float Amount);
-    void TurnAround(float Amount);
-    void LookUp(float Amount);
+    /** Рандомизированный звуковой сигнал выстрела */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    class USoundCue* FireSound;
+
+    /** Вспышка, созданная в BarrelSocket */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    class UParticleSystem* MuzzleFlash;
+
+    /** Монтаж для стрельбы из оружия */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    class UAnimMontage* HipFireMontage;
 
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+    void MoveForward(float Amount);
+    void MoveRight(float Amount);
+    void TurnAround(float Amount);
+    void LookUp(float Amount);
+
+    /** Вызывается при нажатии кнопки Fire */
+    void FireWeapon();
 };
