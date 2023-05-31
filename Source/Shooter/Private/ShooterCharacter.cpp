@@ -4,7 +4,7 @@
 #include "ShooterCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-//#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -21,6 +21,17 @@ AShooterCharacter::AShooterCharacter()
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCamera->bUsePawnControlRotation = false; // Камера не вращается относительно CameraBoom
+
+    // персонаж не вращается, когда вращается контроллер. Контроллер влияет только на камеру.
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = false;
+    bUseControllerRotationRoll = false;
+
+    // Настраиваем движение персонажа
+    GetCharacterMovement()->bOrientRotationToMovement = true; // Персонаж движется в направлении ввода...
+    GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f); // ... при этой частоте вращения
+    GetCharacterMovement()->JumpZVelocity = 600.f; // скорость прыжка
+    GetCharacterMovement()->AirControl = 0.2f; // контроль персонажа в воздухе
 }
 
 // Called when the game starts or when spawned
@@ -57,7 +68,11 @@ void AShooterCharacter::MoveForward(float Amount)
 {
     if (Controller && Amount)
     {
-        AddMovementInput(GetActorForwardVector(), Amount);
+        const FRotator Rotation{ Controller->GetControlRotation() };
+        const FRotator YawRotation{ 0, Rotation.Yaw, 0 };
+
+        const FVector Direction{ FRotationMatrix{YawRotation}.GetUnitAxis(EAxis::X) };
+        AddMovementInput(Direction, Amount);
     }
 }
 
@@ -65,7 +80,11 @@ void AShooterCharacter::MoveRight(float Amount)
 {
     if (Controller && Amount)
     {
-        AddMovementInput(GetActorRightVector(), Amount);
+        const FRotator Rotation{ Controller->GetControlRotation() };
+        const FRotator YawRotation{ 0, Rotation.Yaw, 0 };
+
+        const FVector Direction{ FRotationMatrix{YawRotation}.GetUnitAxis(EAxis::Y) };
+        AddMovementInput(Direction, Amount);
     }
 }
 
