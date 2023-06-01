@@ -20,7 +20,7 @@ AShooterCharacter::AShooterCharacter()
     // создаЄт объект CameraBoom (подт€гиваетс€ к персонажу при столкновении)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 600.f; // длина селфи-палки
+    CameraBoom->TargetArmLength = 300.f; // длина селфи-палки
     CameraBoom->bUsePawnControlRotation = true; // использует вращение пешки
     CameraBoom->SocketOffset = FVector(0.f, 50.f, 50.f);
 
@@ -129,34 +129,58 @@ void AShooterCharacter::FireWeapon()
             UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
         }
 
-        FHitResult FireHit;
-        const FVector Start{ SocketTransform.GetLocation() };
-        const FVector RotationAxis{ SocketTransform.GetRotation().GetAxisX()};
-        const FVector End{ Start + RotationAxis * 50'000.f };
+        FVector2D ViewportSize;
 
-        FVector BeamEndPoint{ End };
-
-        GetWorld()->LineTraceSingleByChannel(FireHit, Start, End, ECollisionChannel::ECC_Visibility);
-
-        if (FireHit.bBlockingHit) // было ли попадание
+        if (GEngine && GEngine->GameViewport)
         {
-            BeamEndPoint = FireHit.Location;
-            //DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 5.f);
-            //DrawDebugPoint(GetWorld(), FireHit.Location, 5.f, FColor::Red, false, 5.f);
-
-            if (ImpactParticle)
-            {
-                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, FireHit.Location);
-            }
+            GEngine->GameViewport->GetViewportSize(ViewportSize); // ѕолучить текущий размер viewport
         }
 
-        if (BeamParticle)
-        {
-            UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticle, SocketTransform);
+        // ѕолучаем местоположение прицела в пространстве экрана
+        FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
+        FVector CrosshairWorldPosition;
+        FVector CrosshairWorldDirection;
 
-            if (Beam)
+        // ѕолучить положение в мире и направление прицела
+        bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+            UGameplayStatics::GetPlayerController(this, 0),
+            CrosshairLocation,
+            CrosshairWorldPosition,
+            CrosshairWorldDirection);
+
+        if (bScreenToWorld) // deprojection прошло успешно?
+        {
+            FHitResult ScreenTraceHit;
+            const FVector StartScreenTrace{ CrosshairWorldPosition };
+            const FVector EndScreenTrace{ CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f };
+
+            // ”станавливаем конечную точку луча в конечную точку трассировки
+            FVector BeamEndPoint{ EndScreenTrace };
+
+            // “рассировка с местоположени€ перекрести€ прицела
+            GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, StartScreenTrace, EndScreenTrace, ECollisionChannel::ECC_Visibility);
+
+            if (ScreenTraceHit.bBlockingHit) // было ли попадание
             {
-                Beam->SetVectorParameter(FName("Target"), BeamEndPoint);
+                BeamEndPoint = ScreenTraceHit.Location; // ”станавливаем конечную точку попадани€
+
+                //DrawDebugLine(GetWorld(), StartScreenTrace, EndScreenTrace, FColor::Red, false, 5.f);
+                //DrawDebugPoint(GetWorld(), ScreenTraceHit.Location, 5.f, FColor::Red, false, 5.f);
+
+                if (ImpactParticle)
+                {
+                    UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, ScreenTraceHit.Location);
+                }
+            }
+
+            if (BeamParticle)
+            {
+                UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticle, SocketTransform);
+
+                if (Beam)
+                {
+                    Beam->SetVectorParameter(FName("Target"), BeamEndPoint);
+                }
             }
         }
     }
