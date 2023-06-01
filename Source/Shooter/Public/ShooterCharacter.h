@@ -47,6 +47,14 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     class UAnimMontage* HipFireMontage;
 
+    // Частицы, образующиеся при попадании пули
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    UParticleSystem* ImpactParticle;
+
+    // дымный след от пули
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    UParticleSystem* BeamParticle;
+
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

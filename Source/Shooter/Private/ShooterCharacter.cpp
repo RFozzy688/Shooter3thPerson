@@ -9,6 +9,7 @@
 #include "Sound/SoundCue.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "DrawDebugHelpers.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -19,7 +20,7 @@ AShooterCharacter::AShooterCharacter()
     // создаЄт объект CameraBoom (подт€гиваетс€ к персонажу при столкновении)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 300.f; // длина селфи-палки
+    CameraBoom->TargetArmLength = 600.f; // длина селфи-палки
     CameraBoom->bUsePawnControlRotation = true; // использует вращение пешки
 
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -132,12 +133,30 @@ void AShooterCharacter::FireWeapon()
         const FVector RotationAxis{ SocketTransform.GetRotation().GetAxisX()};
         const FVector End{ Start + RotationAxis * 50'000.f };
 
+        FVector BeamEndPoint;
+
         GetWorld()->LineTraceSingleByChannel(FireHit, Start, End, ECollisionChannel::ECC_Visibility);
 
-        if (FireHit.bBlockingHit)
+        if (FireHit.bBlockingHit) // было ли попадание
         {
-            DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 5.f);
-            DrawDebugPoint(GetWorld(), FireHit.Location, 5.f, FColor::Red, false, 5.f);
+            BeamEndPoint = FireHit.Location;
+            //DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 5.f);
+            //DrawDebugPoint(GetWorld(), FireHit.Location, 5.f, FColor::Red, false, 5.f);
+
+            if (ImpactParticle)
+            {
+                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, FireHit.Location);
+            }
+        }
+
+        if (BeamParticle)
+        {
+            UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticle, SocketTransform);
+
+            if (Beam)
+            {
+                Beam->SetVectorParameter(FName("Target"), BeamEndPoint);
+            }
         }
     }
 
