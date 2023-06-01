@@ -22,6 +22,7 @@ AShooterCharacter::AShooterCharacter()
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 600.f; // длина селфи-палки
     CameraBoom->bUsePawnControlRotation = true; // использует вращение пешки
+    CameraBoom->SocketOffset = FVector(0.f, 50.f, 50.f);
 
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -29,11 +30,11 @@ AShooterCharacter::AShooterCharacter()
 
     // персонаж не вращается, когда вращается контроллер. Контроллер влияет только на камеру.
     bUseControllerRotationPitch = false;
-    bUseControllerRotationYaw = false;
+    bUseControllerRotationYaw = true;
     bUseControllerRotationRoll = false;
 
     // Настраиваем движение персонажа
-    GetCharacterMovement()->bOrientRotationToMovement = true; // Персонаж движется в направлении ввода...
+    GetCharacterMovement()->bOrientRotationToMovement = false; //(true) Персонаж движется в направлении ввода...
     GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f); // ... при этой частоте вращения
     GetCharacterMovement()->JumpZVelocity = 600.f; // скорость прыжка
     GetCharacterMovement()->AirControl = 0.2f; // контроль персонажа в воздухе
