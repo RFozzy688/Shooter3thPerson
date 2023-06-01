@@ -134,7 +134,7 @@ void AShooterCharacter::FireWeapon()
         const FVector RotationAxis{ SocketTransform.GetRotation().GetAxisX()};
         const FVector End{ Start + RotationAxis * 50'000.f };
 
-        FVector BeamEndPoint;
+        FVector BeamEndPoint{ End };
 
         GetWorld()->LineTraceSingleByChannel(FireHit, Start, End, ECollisionChannel::ECC_Visibility);
 
