@@ -167,10 +167,24 @@ void AShooterCharacter::FireWeapon()
                 //DrawDebugLine(GetWorld(), StartScreenTrace, EndScreenTrace, FColor::Red, false, 5.f);
                 //DrawDebugPoint(GetWorld(), ScreenTraceHit.Location, 5.f, FColor::Red, false, 5.f);
 
-                if (ImpactParticle)
-                {
-                    UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, ScreenTraceHit.Location);
-                }
+
+            }
+
+            // Выполняем вторую трассировку, на этот раз от ствола орудия
+            FHitResult WeaponTraceHit;
+            const FVector WeaponTraceStart{ SocketTransform.GetLocation() };
+            const FVector WeaponTraceEnd{ BeamEndPoint };
+            GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
+
+            if (WeaponTraceHit.bBlockingHit) // объект между стволом и BeamEndPoint?
+            {
+                BeamEndPoint = WeaponTraceHit.Location;
+            }
+
+            if (ImpactParticle)
+            {
+                // Создаем попадание частиц после обновления BeamEndPoint
+                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, BeamEndPoint);
             }
 
             if (BeamParticle)
