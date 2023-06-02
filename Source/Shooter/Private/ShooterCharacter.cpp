@@ -47,6 +47,65 @@ void AShooterCharacter::BeginPlay()
 
 }
 
+bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
+{
+    FVector2D ViewportSize;
+
+    if (GEngine && GEngine->GameViewport)
+    {
+        GEngine->GameViewport->GetViewportSize(ViewportSize); // ѕолучить текущий размер viewport
+    }
+
+    // ѕолучаем местоположение прицела в пространстве экрана
+    FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
+    FVector CrosshairWorldPosition;
+    FVector CrosshairWorldDirection;
+
+    // ѕолучить положение в мире и направление прицела
+    bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+        UGameplayStatics::GetPlayerController(this, 0),
+        CrosshairLocation,
+        CrosshairWorldPosition,
+        CrosshairWorldDirection);
+
+    if (bScreenToWorld) // deprojection прошло успешно?
+    {
+        FHitResult ScreenTraceHit;
+        const FVector StartScreenTrace{ CrosshairWorldPosition };
+        const FVector EndScreenTrace{ CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f };
+
+        // ”станавливаем конечную точку луча в конечную точку трассировки
+        OutBeamLocation = EndScreenTrace;
+
+        // “рассировка с местоположени€ перекрести€ прицела
+        GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, StartScreenTrace, EndScreenTrace, ECollisionChannel::ECC_Visibility);
+
+        if (ScreenTraceHit.bBlockingHit) // было ли попадание
+        {
+            OutBeamLocation = ScreenTraceHit.Location; // ”станавливаем конечную точку попадани€
+
+            //DrawDebugLine(GetWorld(), StartScreenTrace, EndScreenTrace, FColor::Red, false, 5.f);
+            //DrawDebugPoint(GetWorld(), ScreenTraceHit.Location, 5.f, FColor::Red, false, 5.f);
+        }
+
+        // ¬ыполн€ем вторую трассировку, на этот раз от ствола оруди€
+        FHitResult WeaponTraceHit;
+        const FVector WeaponTraceStart{ MuzzleSocketLocation };
+        const FVector WeaponTraceEnd{ OutBeamLocation };
+        GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
+
+        if (WeaponTraceHit.bBlockingHit) // объект между стволом и BeamEndPoint?
+        {
+            OutBeamLocation = WeaponTraceHit.Location;
+
+            //DrawDebugLine(GetWorld(), WeaponTraceStart, WeaponTraceEnd, FColor::Green, false, 5.f);
+            //DrawDebugPoint(GetWorld(), WeaponTraceHit.Location, 5.f, FColor::Green, false, 5.f);
+        }
+        return true;
+    }
+    return false;
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -129,62 +188,16 @@ void AShooterCharacter::FireWeapon()
             UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
         }
 
-        FVector2D ViewportSize;
+        FVector BeamEnd;
 
-        if (GEngine && GEngine->GameViewport)
+        bool bBeamEnd = GetBeamEndLocation(SocketTransform.GetLocation(), BeamEnd);
+
+        if (bBeamEnd)
         {
-            GEngine->GameViewport->GetViewportSize(ViewportSize); // ѕолучить текущий размер viewport
-        }
-
-        // ѕолучаем местоположение прицела в пространстве экрана
-        FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
-        FVector CrosshairWorldPosition;
-        FVector CrosshairWorldDirection;
-
-        // ѕолучить положение в мире и направление прицела
-        bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
-            UGameplayStatics::GetPlayerController(this, 0),
-            CrosshairLocation,
-            CrosshairWorldPosition,
-            CrosshairWorldDirection);
-
-        if (bScreenToWorld) // deprojection прошло успешно?
-        {
-            FHitResult ScreenTraceHit;
-            const FVector StartScreenTrace{ CrosshairWorldPosition };
-            const FVector EndScreenTrace{ CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f };
-
-            // ”станавливаем конечную точку луча в конечную точку трассировки
-            FVector BeamEndPoint{ EndScreenTrace };
-
-            // “рассировка с местоположени€ перекрести€ прицела
-            GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, StartScreenTrace, EndScreenTrace, ECollisionChannel::ECC_Visibility);
-
-            if (ScreenTraceHit.bBlockingHit) // было ли попадание
-            {
-                BeamEndPoint = ScreenTraceHit.Location; // ”станавливаем конечную точку попадани€
-
-                //DrawDebugLine(GetWorld(), StartScreenTrace, EndScreenTrace, FColor::Red, false, 5.f);
-                //DrawDebugPoint(GetWorld(), ScreenTraceHit.Location, 5.f, FColor::Red, false, 5.f);
-
-
-            }
-
-            // ¬ыполн€ем вторую трассировку, на этот раз от ствола оруди€
-            FHitResult WeaponTraceHit;
-            const FVector WeaponTraceStart{ SocketTransform.GetLocation() };
-            const FVector WeaponTraceEnd{ BeamEndPoint };
-            GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
-
-            if (WeaponTraceHit.bBlockingHit) // объект между стволом и BeamEndPoint?
-            {
-                BeamEndPoint = WeaponTraceHit.Location;
-            }
-
             if (ImpactParticle)
             {
-                // —оздаем попадание частиц после обновлени€ BeamEndPoint
-                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, BeamEndPoint);
+                // —оздаем попадание частиц после обновлени€ BeamEnd
+                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, BeamEnd);
             }
 
             if (BeamParticle)
@@ -193,10 +206,10 @@ void AShooterCharacter::FireWeapon()
 
                 if (Beam)
                 {
-                    Beam->SetVectorParameter(FName("Target"), BeamEndPoint);
+                    Beam->SetVectorParameter(FName("Target"), BeamEnd);
                 }
             }
-        }
+        } 
     }
 
     UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
