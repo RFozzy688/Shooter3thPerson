@@ -21,6 +21,12 @@ protected:
 
     bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
 
+    /** Установит для bAiming значение true или false нажатием кнопки */
+    void AimingButtonPressed();
+    void AimingButtonReleased();
+
+    void CameraInterpZoom(float DeltaTime);
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -56,6 +62,23 @@ private:
     // дымный след от пули
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     UParticleSystem* BeamParticle;
+
+    /** Истинно при прицеливании */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    bool bAiming;
+
+    /** Значение поля обзора камеры по умолчанию */
+    float CameraDefaultFOV;
+
+    /** Значение поля обзора камеры при увеличении */
+    float CameraZoomedFOV;
+
+    /** Текущее поле обзора в данном кадре */
+    float CameraCurrentFOV;
+
+    /** скорость интерполяции для масштабирования при прицеливании */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    float ZoomInterpSpeed;
 
 public:
 

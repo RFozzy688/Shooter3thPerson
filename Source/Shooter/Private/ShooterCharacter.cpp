@@ -12,7 +12,11 @@
 #include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
-AShooterCharacter::AShooterCharacter()
+AShooterCharacter::AShooterCharacter() :
+    CameraDefaultFOV(0.f),
+    CameraZoomedFOV(40.f),
+    CameraCurrentFOV(0.f),
+    ZoomInterpSpeed(20.f)
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -44,6 +48,12 @@ AShooterCharacter::AShooterCharacter()
 void AShooterCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    if (FollowCamera)
+    {
+        CameraDefaultFOV = GetFollowCamera()->FieldOfView;
+        CameraCurrentFOV = CameraDefaultFOV;
+    }
 
 }
 
@@ -106,10 +116,39 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
     return false;
 }
 
+void AShooterCharacter::AimingButtonPressed()
+{
+    bAiming = true;
+}
+
+void AShooterCharacter::AimingButtonReleased()
+{
+    bAiming = false;
+}
+
+void AShooterCharacter::CameraInterpZoom(float DeltaTime)
+{
+    // ”становить текущее поле обзора камеры
+    if (bAiming)
+    {
+        // »нтерпол€ци€ дл€ увеличени€ FOV
+        CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraZoomedFOV, DeltaTime, ZoomInterpSpeed);
+    }
+    else
+    {
+        // »нтерпол€ци€ к FOV по умолчанию
+        CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraDefaultFOV, DeltaTime, ZoomInterpSpeed);
+    }
+    GetFollowCamera()->SetFieldOfView(CameraCurrentFOV);
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    // ќбработка интерпол€ции дл€ зума при прицеливании
+    CameraInterpZoom(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -128,6 +167,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
     PlayerInputComponent->BindAction("FireButton", IE_Pressed, this, &AShooterCharacter::FireWeapon);
+
+    PlayerInputComponent->BindAction("AimingButton", IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
+    PlayerInputComponent->BindAction("AimingButton", IE_Released, this, &AShooterCharacter::AimingButtonReleased);
 }
 
 void AShooterCharacter::MoveForward(float Amount)
