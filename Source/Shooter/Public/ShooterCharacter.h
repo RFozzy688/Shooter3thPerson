@@ -92,4 +92,6 @@ public:
 
     /** Вызывается при нажатии кнопки Fire */
     void FireWeapon();
+
+    FORCEINLINE bool GetAiming() const { return bAiming; }
 };
