@@ -16,7 +16,12 @@ AShooterCharacter::AShooterCharacter() :
     CameraDefaultFOV(0.f),
     CameraZoomedFOV(40.f),
     CameraCurrentFOV(0.f),
-    ZoomInterpSpeed(20.f)
+    ZoomInterpSpeed(20.f),
+    // коэффициенты чувствительности мыши 
+    MouseHipTurnRate(1.0f),
+    MouseHipLookUpRate(1.0f),
+    MouseAimingTurnRate(0.2f),
+    MouseAimingLookUpRate(0.2f)
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -200,7 +205,18 @@ void AShooterCharacter::TurnAround(float Amount)
 {
     if (Controller && Amount)
     {
-        AddControllerYawInput(Amount);
+        float TurnScaleFactor{};
+
+        if (bAiming)
+        {
+            TurnScaleFactor = MouseAimingTurnRate;
+        }
+        else
+        {
+            TurnScaleFactor = MouseHipTurnRate;
+        }
+
+        AddControllerYawInput(Amount * TurnScaleFactor);
     }
 }
 
@@ -208,7 +224,18 @@ void AShooterCharacter::LookUp(float Amount)
 {
     if (Controller && Amount)
     {
-        AddControllerPitchInput(Amount);
+        float LookUpScaleFactor{};
+
+        if (bAiming)
+        {
+            LookUpScaleFactor = MouseAimingLookUpRate;
+        }
+        else
+        {
+            LookUpScaleFactor = MouseHipLookUpRate;
+        }
+
+        AddControllerPitchInput(Amount * LookUpScaleFactor);
     }
 }
 

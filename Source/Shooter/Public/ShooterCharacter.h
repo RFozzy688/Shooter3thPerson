@@ -80,6 +80,22 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     float ZoomInterpSpeed;
 
+    /** коэффициент, скорость поворота, когда вы не целитесь. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+    float MouseHipTurnRate;
+
+    /** коэффициент, скорость наклона, когда не целитесь. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+    float MouseHipLookUpRate;
+
+    /** коэффициент, скорость поворота, когда вы целитесь. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+    float MouseAimingTurnRate;
+
+    /** коэффициент, скорость наклона, когда вы целитесь. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+    float MouseAimingLookUpRate;
+
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
