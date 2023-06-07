@@ -96,6 +96,26 @@ private:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
     float MouseAimingLookUpRate;
 
+    /** Определяет разброс перекрестия */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
+    float CrosshairSpreadMultiplier;
+
+    /** Компонент скорости для разброса перекрестия */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
+    float CrosshairVelocityFactor;
+
+    /** компонент для разброса перекрестия в воздухе*/
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
+    float CrosshairInAirFactor;
+
+    /** Компонент прицеливания для разброса перекрестия */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
+    float CrosshairAimFactor;
+
+    /** Компонент стрельбы для разброса перекрестия */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
+    float CrosshairShootingFactor;
+
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -110,4 +130,9 @@ public:
     void FireWeapon();
 
     FORCEINLINE bool GetAiming() const { return bAiming; }
+
+    void CalculateCrosshairSpread(float DeltaTime);
+
+    UFUNCTION(BlueprintCallable)
+    float GetCrosshairSpreadMultiplier() const;
 };

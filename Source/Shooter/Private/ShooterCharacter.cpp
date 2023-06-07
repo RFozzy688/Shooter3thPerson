@@ -21,7 +21,13 @@ AShooterCharacter::AShooterCharacter() :
     MouseHipTurnRate(1.0f),
     MouseHipLookUpRate(1.0f),
     MouseAimingTurnRate(0.2f),
-    MouseAimingLookUpRate(0.2f)
+    MouseAimingLookUpRate(0.2f),
+    // Факторы разброса прицела
+    CrosshairSpreadMultiplier(0.f),
+    CrosshairVelocityFactor(0.f),
+    CrosshairInAirFactor(0.f),
+    CrosshairAimFactor(0.f),
+    CrosshairShootingFactor(0.f)
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -154,6 +160,9 @@ void AShooterCharacter::Tick(float DeltaTime)
 
     // Обработка интерполяции для зума при прицеливании
     CameraInterpZoom(DeltaTime);
+
+    // Рассчитать множитель разброса прицела
+    CalculateCrosshairSpread(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -288,5 +297,65 @@ void AShooterCharacter::FireWeapon()
         AnimInstance->Montage_Play(HipFireMontage);
         AnimInstance->Montage_JumpToSection(TEXT("StartFire"));
     }
+}
+
+void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
+{
+    FVector2D WalkSpeedRange{ 0.f, 600.f };
+    FVector2D VelocityMultiplierRange{ 0.f, 1.f };
+    FVector Velocity{ GetVelocity() };
+    Velocity.Z = 0.f;
+
+    CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(
+        WalkSpeedRange,
+        VelocityMultiplierRange,
+        Velocity.Size());
+
+    // расширение прицела в воздухе
+    if (GetCharacterMovement()->IsFalling()) // is in air?
+    {
+        // медленное расширение прицела в воздухе
+        CrosshairInAirFactor = FMath::FInterpTo(
+            CrosshairInAirFactor,
+            2.25f,
+            DeltaTime,
+            2.25f);
+    }
+    else // Персонаж находится на земле
+    {
+        // Быстро сжимайте прицела, находясь на земле
+        CrosshairInAirFactor = FMath::FInterpTo(
+            CrosshairInAirFactor,
+            0.f,
+            DeltaTime,
+            30.f);
+    }
+
+    // персонаж прицеливается
+    if (GetAiming())
+    {
+        // сужение прицела при прицеливании
+        CrosshairAimFactor = FMath::FInterpTo(
+            CrosshairAimFactor,
+            0.5f,
+            DeltaTime,
+            2.25f);
+    }
+    else // персонаж не прицеливается
+    {
+        // возврат прицела к дефолтному состоянию
+        CrosshairAimFactor = FMath::FInterpTo(
+            CrosshairAimFactor,
+            0.f,
+            DeltaTime,
+            30.f);
+    }
+
+    CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor + CrosshairInAirFactor - CrosshairAimFactor;
+}
+
+float AShooterCharacter::GetCrosshairSpreadMultiplier() const
+{
+    return CrosshairSpreadMultiplier;
 }
 
