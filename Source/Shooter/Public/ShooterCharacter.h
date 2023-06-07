@@ -34,6 +34,14 @@ protected:
     UFUNCTION()
     void FinishCrosshairBulletFire();
 
+    void FireButtonPressed();
+    void FireButtonReleased();
+
+    void StartFireTimer();
+
+    UFUNCTION()
+    void AutoFireReset();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -126,6 +134,18 @@ private:
     float ShootTimeDuration;
     bool bFiringBullet;
     FTimerHandle CrosshairShootTimer;
+
+    /** Нажата левая кнопка мыши */
+    bool bFireButtonPressed;
+
+    /** true, когда мы можем стрелять. False при ожидании таймера */
+    bool bShouldFire;
+
+    /** Скорострельность автоматического оружия */
+    float AutomaticFireRate;
+
+    /** Устанавливает таймер между выстрелами */
+    FTimerHandle AutoFireTimer;
 
 public:
 
