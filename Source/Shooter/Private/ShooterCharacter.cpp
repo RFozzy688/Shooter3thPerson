@@ -10,6 +10,8 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "DrawDebugHelpers.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Item.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() :
@@ -77,60 +79,38 @@ void AShooterCharacter::BeginPlay()
 
 bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
 {
-    FVector2D ViewportSize;
+    // проверка на попадание трасировки от перекрести€
+    FHitResult CrosshairHitResult;
+    bool bCrosshairHit = TraceUnderCrosshairs(CrosshairHitResult, OutBeamLocation);
 
-    if (GEngine && GEngine->GameViewport)
+    if (bCrosshairHit)
     {
-        GEngine->GameViewport->GetViewportSize(ViewportSize); // ѕолучить текущий размер viewport
+        // ѕредварительное расположение луча - все еще нужна трасировка от ствола оружи€
+        OutBeamLocation = CrosshairHitResult.Location;
+    }
+    else // нет попадани€ трасировки от перекрести€
+    {
+        // OutBeamLocation конечное положение линейной трасировки
     }
 
-    // ѕолучаем местоположение прицела в пространстве экрана
-    FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
-    FVector CrosshairWorldPosition;
-    FVector CrosshairWorldDirection;
+    // ¬ыполн€ем вторую трассировку, на этот раз от ствола оруди€
+    FHitResult WeaponTraceHit;
+    const FVector WeaponTraceStart{ MuzzleSocketLocation };
+    const FVector StartToEnd{ OutBeamLocation - WeaponTraceStart };
+    const FVector WeaponTraceEnd{ MuzzleSocketLocation + StartToEnd * 1.25f };
 
-    // ѕолучить положение в мире и направление прицела
-    bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
-        UGameplayStatics::GetPlayerController(this, 0),
-        CrosshairLocation,
-        CrosshairWorldPosition,
-        CrosshairWorldDirection);
+    GetWorld()->LineTraceSingleByChannel(
+        WeaponTraceHit,
+        WeaponTraceStart,
+        WeaponTraceEnd,
+        ECollisionChannel::ECC_Visibility);
 
-    if (bScreenToWorld) // deprojection прошло успешно?
+    if (WeaponTraceHit.bBlockingHit) // объект между стволом и BeamEndPoint?
     {
-        FHitResult ScreenTraceHit;
-        const FVector StartScreenTrace{ CrosshairWorldPosition };
-        const FVector EndScreenTrace{ CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f };
-
-        // ”станавливаем конечную точку луча в конечную точку трассировки
-        OutBeamLocation = EndScreenTrace;
-
-        // “рассировка с местоположени€ перекрести€ прицела
-        GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, StartScreenTrace, EndScreenTrace, ECollisionChannel::ECC_Visibility);
-
-        if (ScreenTraceHit.bBlockingHit) // было ли попадание
-        {
-            OutBeamLocation = ScreenTraceHit.Location; // ”станавливаем конечную точку попадани€
-
-            //DrawDebugLine(GetWorld(), StartScreenTrace, EndScreenTrace, FColor::Red, false, 5.f);
-            //DrawDebugPoint(GetWorld(), ScreenTraceHit.Location, 5.f, FColor::Red, false, 5.f);
-        }
-
-        // ¬ыполн€ем вторую трассировку, на этот раз от ствола оруди€
-        FHitResult WeaponTraceHit;
-        const FVector WeaponTraceStart{ MuzzleSocketLocation };
-        const FVector WeaponTraceEnd{ OutBeamLocation };
-        GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
-
-        if (WeaponTraceHit.bBlockingHit) // объект между стволом и BeamEndPoint?
-        {
-            OutBeamLocation = WeaponTraceHit.Location;
-
-            //DrawDebugLine(GetWorld(), WeaponTraceStart, WeaponTraceEnd, FColor::Green, false, 5.f);
-            //DrawDebugPoint(GetWorld(), WeaponTraceHit.Location, 5.f, FColor::Green, false, 5.f);
-        }
+        OutBeamLocation = WeaponTraceHit.Location;
         return true;
     }
+
     return false;
 }
 
@@ -170,6 +150,21 @@ void AShooterCharacter::Tick(float DeltaTime)
 
     // –ассчитать множитель разброса прицела
     CalculateCrosshairSpread(DeltaTime);
+
+    FHitResult ItemTraceResult;
+    FVector HitLocation;
+
+    TraceUnderCrosshairs(ItemTraceResult, HitLocation);
+
+    if (ItemTraceResult.bBlockingHit)
+    {
+        AItem* HitItem = Cast<AItem>(ItemTraceResult.Actor);
+        if (HitItem && HitItem->GetPickupWidget())
+        {
+            // ѕоказать виджет получени€ предмета
+            HitItem->GetPickupWidget()->SetVisibility(true);
+        }
+    }
 }
 
 // Called to bind functionality to input
@@ -436,4 +431,48 @@ void AShooterCharacter::AutoFireReset()
     {
         StartFireTimer();
     }
+}
+
+bool AShooterCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation)
+{
+    FVector2D ViewportSize;
+
+    if (GEngine && GEngine->GameViewport)
+    {
+        GEngine->GameViewport->GetViewportSize(ViewportSize); // ѕолучить текущий размер viewport
+    }
+
+    // ѕолучаем местоположение прицела в пространстве экрана
+    FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
+    FVector CrosshairWorldPosition;
+    FVector CrosshairWorldDirection;
+
+    // ѕолучить положение в мире и направление прицела
+    bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+        UGameplayStatics::GetPlayerController(this, 0),
+        CrosshairLocation,
+        CrosshairWorldPosition,
+        CrosshairWorldDirection);
+
+    if (bScreenToWorld) // deprojection прошло успешно?
+    {
+        FHitResult ScreenTraceHit;
+        const FVector Start{ CrosshairWorldPosition };
+        const FVector End{ CrosshairWorldPosition + CrosshairWorldDirection * 50'000.f };
+        OutHitLocation = End;
+
+        // “рассировка от местоположени€ Crosshair наружу
+        GetWorld()->LineTraceSingleByChannel(
+            OutHitResult,
+            Start,
+            End,
+            ECollisionChannel::ECC_Visibility);
+
+        if (OutHitResult.bBlockingHit)
+        {
+            OutHitLocation = OutHitResult.Location;
+            return true;
+        }
+    }
+    return false;
 }

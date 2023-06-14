@@ -42,6 +42,9 @@ protected:
     UFUNCTION()
     void AutoFireReset();
 
+    /** Трассировка для пересечения с предметами. Трассировка выходит из перекрестия */
+    bool TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutBeamLocation);
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
