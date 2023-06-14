@@ -36,7 +36,10 @@ AShooterCharacter::AShooterCharacter() :
     // Автоматический огнь, переменные 
     AutomaticFireRate(0.1f),
     bShouldFire(true),
-    bFireButtonPressed(false)
+    bFireButtonPressed(false),
+    // элементы трасировки, переменные 
+    bShouldTraceForItems(false),
+    OverlappedItemCount(0)
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -151,20 +154,8 @@ void AShooterCharacter::Tick(float DeltaTime)
     // Рассчитать множитель разброса прицела
     CalculateCrosshairSpread(DeltaTime);
 
-    FHitResult ItemTraceResult;
-    FVector HitLocation;
-
-    TraceUnderCrosshairs(ItemTraceResult, HitLocation);
-
-    if (ItemTraceResult.bBlockingHit)
-    {
-        AItem* HitItem = Cast<AItem>(ItemTraceResult.Actor);
-        if (HitItem && HitItem->GetPickupWidget())
-        {
-            // Показать виджет получения предмета
-            HitItem->GetPickupWidget()->SetVisibility(true);
-        }
-    }
+    // количество пересеченных предметов
+    TraceForItems();
 }
 
 // Called to bind functionality to input
@@ -383,6 +374,20 @@ float AShooterCharacter::GetCrosshairSpreadMultiplier() const
     return CrosshairSpreadMultiplier;
 }
 
+void AShooterCharacter::IncrementOverlappedItemCount(int8 Amount)
+{
+    if (OverlappedItemCount + Amount <= 0)
+    {
+        OverlappedItemCount = 0;
+        bShouldTraceForItems = false;
+    }
+    else
+    {
+        OverlappedItemCount += Amount;
+        bShouldTraceForItems = true;
+    }
+}
+
 void AShooterCharacter::StartCrosshairBulletFire()
 {
     bFiringBullet = true;
@@ -475,4 +480,23 @@ bool AShooterCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& 
         }
     }
     return false;
+}
+
+void AShooterCharacter::TraceForItems()
+{
+    if (bShouldTraceForItems)
+    {
+        FHitResult ItemTraceResult;
+        FVector HitLocation;
+        TraceUnderCrosshairs(ItemTraceResult, HitLocation);
+        if (ItemTraceResult.bBlockingHit)
+        {
+            AItem* HitItem = Cast<AItem>(ItemTraceResult.Actor);
+            if (HitItem && HitItem->GetPickupWidget())
+            {
+                // Показать виджет получения предмета
+                HitItem->GetPickupWidget()->SetVisibility(true);
+            }
+        }
+    }
 }

@@ -45,6 +45,9 @@ protected:
     /** Трассировка для пересечения с предметами. Трассировка выходит из перекрестия */
     bool TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutBeamLocation);
 
+    /** трасировка для предметы, если OverlappedItemCount > 0 */
+    void TraceForItems();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -150,6 +153,12 @@ private:
     /** Устанавливает таймер между выстрелами */
     FTimerHandle AutoFireTimer;
 
+    /** Истинно, если мы должны отслеживать в каждом кадре для элементов */
+    bool bShouldTraceForItems;
+
+    /** Количество пересечений AItems */
+    int8 OverlappedItemCount;
+
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -167,4 +176,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     float GetCrosshairSpreadMultiplier() const;
+
+    FORCEINLINE int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
+
+    /** Добавляет/вычитает из OverlappedItemCount и обновляет bShouldTraceForItems */
+    void IncrementOverlappedItemCount(int8 Amount);
 };
