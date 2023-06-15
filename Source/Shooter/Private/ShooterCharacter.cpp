@@ -497,6 +497,25 @@ void AShooterCharacter::TraceForItems()
                 // Показать виджет получения предмета
                 HitItem->GetPickupWidget()->SetVisibility(true);
             }
+
+            // AItem в который мы попали в последнем кадре 
+            if (TraceHitItemLastFrame)
+            {
+                if (HitItem != TraceHitItemLastFrame)
+                {
+                    // если мы не смотрим на AItem из предыдущего кадра, то убираем уго
+                    // Или AItem имеет значение null.
+                    TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+                }
+            }
+            // Сохранить ссылку на HitItem для следующего кадра
+            TraceHitItemLastFrame = HitItem;
         }
+    }
+    else if (TraceHitItemLastFrame)
+    {
+        // Больше никаких элементов не перекрывается,
+         // Последний кадр элемента не должен отображать виджет
+        TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
     }
 }

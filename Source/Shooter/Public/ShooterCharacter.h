@@ -159,6 +159,10 @@ private:
     /** Количество пересечений AItems */
     int8 OverlappedItemCount;
 
+    /** AItem, в который попала трасировка в последнем кадре */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+    class AItem* TraceHitItemLastFrame;
+
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
