@@ -541,22 +541,15 @@ void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
 {
     if (WeaponToEquip)
     {
-        // Настройте AreaSphere на игнорирование всех каналов столкновений.
-        WeaponToEquip->GetAreaSphere()->SetCollisionResponseToAllChannels(
-            ECollisionResponse::ECR_Ignore);
-
-        // Настройте CollisionBox, чтобы игнорировать все каналы столкновений.
-        WeaponToEquip->GetCollisionBox()->SetCollisionResponseToAllChannels(
-            ECollisionResponse::ECR_Ignore);
-
         // Получить сокет руки
-        const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(
-            FName("RightHandSocket"));
+        const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+
         if (HandSocket)
         {
             // Прикрепите оружие к сокету руки RightHandSocket
             HandSocket->AttachActor(WeaponToEquip, GetMesh());
         }
+
         // Установите EquippedWeapon на недавно созданное оружие.
         EquippedWeapon = WeaponToEquip;
 
