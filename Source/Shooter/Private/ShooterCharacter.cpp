@@ -559,5 +559,7 @@ void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
         }
         // Установите EquippedWeapon на недавно созданное оружие.
         EquippedWeapon = WeaponToEquip;
+
+        EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
     }
 }
