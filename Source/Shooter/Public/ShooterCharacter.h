@@ -54,6 +54,12 @@ protected:
     /** Берет оружие и прикрепляет его к сетке */
     void EquipWeapon(AWeapon* WeaponToEquip);
 
+    /** Сброс оружия на землю */
+    void DropWeapon();
+
+    void SelectButtonPressed();
+    void SelectButtonReleased();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
