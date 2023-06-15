@@ -13,6 +13,8 @@
 #include "Item.h"
 #include "Components/WidgetComponent.h"
 #include "Weapon.h"
+#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() :
@@ -80,7 +82,7 @@ void AShooterCharacter::BeginPlay()
     }
 
     // Spawn дефолтного оружи€ и прикрепление его к мешу
-    SpawnDefaultWeapon();
+    EquipWeapon(SpawnDefaultWeapon());
 }
 
 bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
@@ -523,21 +525,39 @@ void AShooterCharacter::TraceForItems()
     }
 }
 
-void AShooterCharacter::SpawnDefaultWeapon()
+AWeapon* AShooterCharacter::SpawnDefaultWeapon()
 {
     // ѕроверить переменную TSubclassOf
     if (DefaultWeaponClass)
     {
         // Spawn оружи€
-        AWeapon* DefaultWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
-        // вз€ть сокет руки
-        const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+        return GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
+    }
+
+    return nullptr;
+}
+
+void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
+{
+    if (WeaponToEquip)
+    {
+        // Ќастройте AreaSphere на игнорирование всех каналов столкновений.
+        WeaponToEquip->GetAreaSphere()->SetCollisionResponseToAllChannels(
+            ECollisionResponse::ECR_Ignore);
+
+        // Ќастройте CollisionBox, чтобы игнорировать все каналы столкновений.
+        WeaponToEquip->GetCollisionBox()->SetCollisionResponseToAllChannels(
+            ECollisionResponse::ECR_Ignore);
+
+        // ѕолучить сокет руки
+        const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(
+            FName("RightHandSocket"));
         if (HandSocket)
         {
-            // прикрепить оружие к сокету руки RightHandSocket
-            HandSocket->AttachActor(DefaultWeapon, GetMesh());
+            // ѕрикрепите оружие к сокету руки RightHandSocket
+            HandSocket->AttachActor(WeaponToEquip, GetMesh());
         }
         // ”становите EquippedWeapon на недавно созданное оружие.
-        EquippedWeapon = DefaultWeapon;
+        EquippedWeapon = WeaponToEquip;
     }
 }
