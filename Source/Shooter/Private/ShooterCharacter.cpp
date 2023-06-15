@@ -12,6 +12,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Item.h"
 #include "Components/WidgetComponent.h"
+#include "Weapon.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() :
@@ -78,6 +79,8 @@ void AShooterCharacter::BeginPlay()
         CameraCurrentFOV = CameraDefaultFOV;
     }
 
+    // Spawn дефолтного оружия и прикрепление его к мешу
+    SpawnDefaultWeapon();
 }
 
 bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
@@ -517,5 +520,24 @@ void AShooterCharacter::TraceForItems()
         // Больше никаких элементов не перекрывается,
          // Последний кадр элемента не должен отображать виджет
         TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+    }
+}
+
+void AShooterCharacter::SpawnDefaultWeapon()
+{
+    // Проверить переменную TSubclassOf
+    if (DefaultWeaponClass)
+    {
+        // Spawn оружия
+        AWeapon* DefaultWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
+        // взять сокет руки
+        const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+        if (HandSocket)
+        {
+            // прикрепить оружие к сокету руки RightHandSocket
+            HandSocket->AttachActor(DefaultWeapon, GetMesh());
+        }
+        // Установите EquippedWeapon на недавно созданное оружие.
+        EquippedWeapon = DefaultWeapon;
     }
 }

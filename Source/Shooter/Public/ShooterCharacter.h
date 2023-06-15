@@ -48,6 +48,8 @@ protected:
     /** трасировка дл€ предметы, если OverlappedItemCount > 0 */
     void TraceForItems();
 
+    void SpawnDefaultWeapon();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -162,6 +164,14 @@ private:
     /** AItem, в который попала трасировка в последнем кадре */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
     class AItem* TraceHitItemLastFrame;
+
+    /** “екущее экипированное оружие */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    class AWeapon* EquippedWeapon;
+
+    /** ”становите это в Blueprints дл€ класса оружи€ по умолчанию. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<AWeapon> DefaultWeaponClass;
 
 public:
 
