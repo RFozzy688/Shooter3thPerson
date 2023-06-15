@@ -124,6 +124,7 @@ void AItem::SetItemProperties(EItemState State)
     case EItemState::EIS_Pickup:
         // устанавливаем свойства меша
         ItemMesh->SetSimulatePhysics(false);
+        ItemMesh->SetEnableGravity(false);
         ItemMesh->SetVisibility(true);
         ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
         ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
