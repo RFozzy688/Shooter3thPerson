@@ -190,6 +190,14 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
     AItem* TraceHitItem;
 
+    /** Расстояние вперед от камеры до пункта назначения interp */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+    float CameraInterpDistance;
+
+    /** Расстояние вверх от камеры до пункта назначения interp */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+    float CameraInterpElevation;
+
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -212,4 +220,6 @@ public:
 
     /** Добавляет/вычитает из OverlappedItemCount и обновляет bShouldTraceForItems */
     void IncrementOverlappedItemCount(int8 Amount);
+
+    FVector GetCameraInterpLocation();
 };

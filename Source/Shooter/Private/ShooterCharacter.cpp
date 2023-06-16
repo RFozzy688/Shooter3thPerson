@@ -42,7 +42,10 @@ AShooterCharacter::AShooterCharacter() :
     bFireButtonPressed(false),
     // элементы трасировки, переменные 
     bShouldTraceForItems(false),
-    OverlappedItemCount(0)
+    OverlappedItemCount(0),
+    // местоположения взаимодействия с камерой, переменные 
+    CameraInterpDistance(250.f),
+    CameraInterpElevation(65.f)
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -394,6 +397,15 @@ void AShooterCharacter::IncrementOverlappedItemCount(int8 Amount)
         OverlappedItemCount += Amount;
         bShouldTraceForItems = true;
     }
+}
+
+FVector AShooterCharacter::GetCameraInterpLocation()
+{
+    const FVector CameraWorldLocation{ FollowCamera->GetComponentLocation() };
+    const FVector CameraForward{ FollowCamera->GetForwardVector() };
+    // Desired = CameraWorldLocation + Forward * A + Up * B
+    return CameraWorldLocation + CameraForward * CameraInterpDistance
+        + FVector(0.f, 0.f, CameraInterpElevation);
 }
 
 void AShooterCharacter::StartCrosshairBulletFire()
