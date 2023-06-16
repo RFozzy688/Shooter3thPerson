@@ -221,5 +221,9 @@ public:
     /** Добавляет/вычитает из OverlappedItemCount и обновляет bShouldTraceForItems */
     void IncrementOverlappedItemCount(int8 Amount);
 
+    // возращает коор. точки перед камерой
     FVector GetCameraInterpLocation();
+
+    // поднятие предмета с иртерполяцией
+    void GetPickupItem(AItem* Item);
 };
