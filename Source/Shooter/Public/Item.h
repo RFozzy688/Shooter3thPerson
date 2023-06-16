@@ -67,6 +67,9 @@ protected:
     // устанавливает свойства компонента предмета в зависимости от базового состояния
     void SetItemProperties(EItemState State);
 
+    /** Вызывается, когда ItemInterpTimer завершен */
+    void FinishInterping();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -107,6 +110,30 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
     EItemState ItemState;
 
+    /** Асет кривой, используемый для расположения элемента по оси Z при интерполяции. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    class UCurveFloat* ItemZCurve;
+
+    /** Исходное местоположение, когда начинается интерполяция */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    FVector ItemInterpStartLocation;
+    /** точка взаимодействия перед камерой */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    FVector CameraTargetLocation;
+    /** true при интерполяции */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    bool bInterping;
+
+    /** таймер интерполяции */
+    FTimerHandle ItemInterpTimer;
+    /** Продолжительность кривой и таймера */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    float ZCurveTime;
+
+    /** Указатель на character */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    class AShooterCharacter* Character;
+
 public:
 
     FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
@@ -115,4 +142,7 @@ public:
     FORCEINLINE EItemState GetItemState() const { return ItemState; }
     void SetItemState(EItemState State);
     FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
+
+    /** Вызывается из класса AShooterCharacter */
+    void StartItemCurve(AShooterCharacter* Char);
 };
