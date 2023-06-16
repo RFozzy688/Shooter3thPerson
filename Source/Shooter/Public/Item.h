@@ -70,6 +70,9 @@ protected:
     /** Вызывается, когда ItemInterpTimer завершен */
     void FinishInterping();
 
+    /** Обрабатывает интерполяцию элементов в состоянии EquipInterping. */
+    void ItemInterp(float DeltaTime);
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;

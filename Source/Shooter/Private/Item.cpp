@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/SphereComponent.h"
 #include "ShooterCharacter.h"
+#include "Curves/CurveVector.h"
 
 // Sets default values
 AItem::AItem():
@@ -21,6 +22,7 @@ AItem::AItem():
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
+    SetActorTickEnabled(true);
 
     ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
     SetRootComponent(ItemMesh);
@@ -144,6 +146,19 @@ void AItem::SetItemProperties(EItemState State)
         CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
         break;
     case EItemState::EIS_EquipInterping:
+        PickupWidget->SetVisibility(false);
+        // Set mesh properties
+        ItemMesh->SetSimulatePhysics(false);
+        ItemMesh->SetEnableGravity(false);
+        ItemMesh->SetVisibility(true);
+        ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+        ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        // Set AreaSphere properties
+        AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+        AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        // Set CollisionBox properties
+        CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+        CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         break;
     case EItemState::EIS_PickedUp:
         break;
@@ -187,9 +202,41 @@ void AItem::SetItemProperties(EItemState State)
 
 void AItem::FinishInterping()
 {
+    bInterping = false;
+
     if (Character)
     {
         Character->GetPickupItem(this);
+    }
+}
+
+void AItem::ItemInterp(float DeltaTime)
+{
+    if (!bInterping) return;
+
+    UE_LOG(LogTemp, Warning, TEXT("Character: %d"), Character);
+    UE_LOG(LogTemp, Warning, TEXT("ItemZCurve: %d"), ItemZCurve);
+
+    if (Character && ItemZCurve)
+    {
+        // Прошедшее время с момента запуска ItemInterpTimer
+        const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
+        // Получить значение кривой, соответствующее ElapsedTime
+        const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
+        UE_LOG(LogTemp, Warning, TEXT("CurveValue: %f"), CurveValue);
+        // Получить начальное местоположение элемента, когда кривая начинается
+        FVector ItemLocation = ItemInterpStartLocation;
+        // Получить местоположение перед камерой
+        const FVector CameraInterpLocation{ Character->GetCameraInterpLocation() };
+
+        // Вектор от объекта к местоположению камеры, X и Y обнуляются
+        const FVector ItemToCamera{ FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z) };
+        // Масштабный коэффициент для умножения на CurveValue
+        const float DeltaZ = ItemToCamera.Size();
+
+        // Добавление значения кривой к компоненту Z начального местоположения (в масштабе DeltaZ)
+        ItemLocation.Z += CurveValue * DeltaZ;
+        SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
     }
 }
 
@@ -198,6 +245,9 @@ void AItem::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    // Обработка Interping Item в состоянии EquipInterping
+    ItemInterp(DeltaTime);
+    UE_LOG(LogTemp, Warning, TEXT("Character: %d"), 1);
 }
 
 void AItem::SetItemState(EItemState State)
