@@ -60,6 +60,9 @@ protected:
     void SelectButtonPressed();
     void SelectButtonReleased();
 
+    /** —брасывает текущее экипированое оружие и экипирует предметом найденным при помощи трасировки */
+    void SwapWeapon(AWeapon* WeaponToSwap);
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -182,6 +185,10 @@ private:
     /** ”становите это в Blueprints дл€ класса оружи€ по умолчанию. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
     TSubclassOf<AWeapon> DefaultWeaponClass;
+
+    /** Ёлемент, который в насто€щее врем€ попадает в нашу трассировку в TraceForItems (может быть нулевым) */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    AItem* TraceHitItem;
 
 public:
 
