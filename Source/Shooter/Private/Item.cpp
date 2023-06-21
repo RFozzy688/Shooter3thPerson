@@ -223,7 +223,7 @@ void AItem::ItemInterp(float DeltaTime)
         const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
         // ѕолучить значение кривой, соответствующее ElapsedTime
         const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
-        UE_LOG(LogTemp, Warning, TEXT("CurveValue: %f"), CurveValue);
+        //UE_LOG(LogTemp, Warning, TEXT("CurveValue: %f"), CurveValue);
         // ѕолучить начальное местоположение элемента, когда крива€ начинаетс€
         FVector ItemLocation = ItemInterpStartLocation;
         // ѕолучить местоположение перед камерой
@@ -247,7 +247,7 @@ void AItem::Tick(float DeltaTime)
 
     // ќбработка Interping Item в состо€нии EquipInterping
     ItemInterp(DeltaTime);
-    UE_LOG(LogTemp, Warning, TEXT("Character: %d"), 1);
+    //UE_LOG(LogTemp, Warning, TEXT("Character: %d"), 1);
 }
 
 void AItem::SetItemState(EItemState State)
