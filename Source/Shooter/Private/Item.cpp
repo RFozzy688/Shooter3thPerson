@@ -18,7 +18,9 @@ AItem::AItem():
     ZCurveTime(0.7f),
     ItemInterpStartLocation(FVector(0.f)),
     CameraTargetLocation(FVector(0.f)),
-    bInterping(false)
+    bInterping(false),
+    ItemInterpX(0.f),
+    ItemInterpY(0.f)
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -214,9 +216,6 @@ void AItem::ItemInterp(float DeltaTime)
 {
     if (!bInterping) return;
 
-    UE_LOG(LogTemp, Warning, TEXT("Character: %d"), Character);
-    UE_LOG(LogTemp, Warning, TEXT("ItemZCurve: %d"), ItemZCurve);
-
     if (Character && ItemZCurve)
     {
         // Прошедшее время с момента запуска ItemInterpTimer
@@ -233,6 +232,24 @@ void AItem::ItemInterp(float DeltaTime)
         const FVector ItemToCamera{ FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z) };
         // Масштабный коэффициент для умножения на CurveValue
         const float DeltaZ = ItemToCamera.Size();
+
+        const FVector CurrentLocation{ GetActorLocation() };
+        // Интерполированное значение X
+        const float InterpXValue = FMath::FInterpTo(
+            CurrentLocation.X,
+            CameraInterpLocation.X,
+            DeltaTime,
+            30.0f);
+        // Интерполированное значение Y
+        const float InterpYValue = FMath::FInterpTo(
+            CurrentLocation.Y,
+            CameraInterpLocation.Y,
+            DeltaTime,
+            30.f);
+
+        // Установите для X и Y ItemLocation значения Interped.
+        ItemLocation.X = InterpXValue;
+        ItemLocation.Y = InterpYValue;
 
         // Добавление значения кривой к компоненту Z начального местоположения (в масштабе DeltaZ)
         ItemLocation.Z += CurveValue * DeltaZ;

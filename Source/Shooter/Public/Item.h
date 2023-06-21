@@ -137,6 +137,10 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
     class AShooterCharacter* Character;
 
+    /** X и Y для элемента во время интерполяции в состоянии EquipInterping */
+    float ItemInterpX;
+    float ItemInterpY;
+
 public:
 
     FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
