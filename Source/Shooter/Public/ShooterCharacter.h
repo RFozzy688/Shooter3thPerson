@@ -85,6 +85,9 @@ protected:
     /** Инициализировать карту боеприпасов значениями боеприпасов */
     void InitializeAmmoMap();
 
+    /** Убедитесь, что в нашем оружии есть патроны. */
+    bool WeaponHasAmmo();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
