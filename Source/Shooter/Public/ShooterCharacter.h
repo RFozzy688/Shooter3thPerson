@@ -88,11 +88,16 @@ protected:
     /** Убедитесь, что в нашем оружии есть патроны. */
     bool WeaponHasAmmo();
 
+    /** FireWeapon functions */
     void PlayFireSound();
-
     void SendBullet();
-
     void PlayGunfireMontage();
+
+    /** Привязан к клавише R */
+    void ReloadButtonPressed();
+
+    /** Ручная перезарядка оружия */
+    void ReloadWeapon();
 
 public:	
     // Called every frame
@@ -245,12 +250,12 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
     ECombatState CombatState;
 
-    /** Montage for reload animations */
+    /** Монтаж анимации перезарядки */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     UAnimMontage* ReloadMontage;
 
-    //UFUNCTION(BlueprintCallable)
-    //void FinishReloading();
+    UFUNCTION(BlueprintCallable)
+    void FinishReloading();
 
 public:
 
