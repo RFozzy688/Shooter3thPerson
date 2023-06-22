@@ -6,6 +6,25 @@
 #include "GameFramework/Character.h"
 #include "ShooterCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EAmmoType : uint8
+{
+    EAT_9mm UMETA(DisplayName = "9mm"),
+    EAT_AR UMETA(DisplayName = "AssaultRifle"),
+
+    EAT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+UENUM(BlueprintType)
+enum class ECombatState : uint8
+{
+    ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),
+    ECS_FireTimerInProgress UMETA(DisplayName = "FireTimerInProgress"),
+    ECS_Reloading UMETA(DisplayName = "Reloading"),
+
+    ECS_NAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -62,6 +81,9 @@ protected:
 
     /** Сбрасывает текущее экипированое оружие и экипирует предметом найденным при помощи трасировки */
     void SwapWeapon(AWeapon* WeaponToSwap);
+
+    /** Инициализировать карту боеприпасов значениями боеприпасов */
+    void InitializeAmmoMap();
 
 public:	
     // Called every frame
@@ -197,6 +219,29 @@ private:
     /** Расстояние вверх от камеры до пункта назначения interp */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
     float CameraInterpElevation;
+
+    /** Map для отслеживания боеприпасов различных типов */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+    TMap<EAmmoType, int32> AmmoMap;
+
+    /** Начальное количество патронов калибра 9 мм */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+    int32 Starting9mmAmmo;
+
+    /** Начальное количество боеприпасов AR */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+    int32 StartingARAmmo;
+
+    /** Combat State, can only fire or reload if Unoccupied */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    ECombatState CombatState;
+
+    /** Montage for reload animations */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    UAnimMontage* ReloadMontage;
+
+    //UFUNCTION(BlueprintCallable)
+    //void FinishReloading();
 
 public:
 

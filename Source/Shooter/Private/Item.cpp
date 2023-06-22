@@ -280,7 +280,7 @@ void AItem::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     // Обработка Interping Item в состоянии EquipInterping
-    ItemInterp(DeltaTime);
+    //ItemInterp(DeltaTime);
     //UE_LOG(LogTemp, Warning, TEXT("Character: %d"), 1);
 }
 
@@ -310,6 +310,7 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
     // Получить начальный поворот предмета
     const float ItemRotationYaw{ GetActorRotation().Yaw };
     // Начальное смещение рыскания между камерой и объектом
-    InterpInitialYawOffset = ItemRotationYaw - CameraRotationYaw;
+    InterpInitialYawOffset = ItemRotationYaw - CameraRotationYaw; // (180)
+
 }
 
