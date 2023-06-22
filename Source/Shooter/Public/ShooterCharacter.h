@@ -22,7 +22,7 @@ enum class ECombatState : uint8
     ECS_FireTimerInProgress UMETA(DisplayName = "FireTimerInProgress"),
     ECS_Reloading UMETA(DisplayName = "Reloading"),
 
-    ECS_NAX UMETA(DisplayName = "DefaultMAX")
+    ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
 UCLASS()
@@ -87,6 +87,12 @@ protected:
 
     /** ”бедитесь, что в нашем оружии есть патроны. */
     bool WeaponHasAmmo();
+
+    void PlayFireSound();
+
+    void SendBullet();
+
+    void PlayGunfireMontage();
 
 public:	
     // Called every frame
@@ -235,7 +241,7 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
     int32 StartingARAmmo;
 
-    /** Combat State, can only fire or reload if Unoccupied */
+    /** Ѕоевое состо€ние, может стрел€ть или перезар€жатьс€ только в Unoccupied. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
     ECombatState CombatState;
 
