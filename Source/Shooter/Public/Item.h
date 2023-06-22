@@ -144,6 +144,10 @@ private:
     /** Начальное смещение рыскания между камерой и промежуточным элементом */
     float InterpInitialYawOffset;
 
+    /** Кривая, используемая для масштабирования элемента при вставке */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    UCurveFloat* ItemScaleCurve;
+
 public:
 
     FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
