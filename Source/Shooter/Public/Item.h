@@ -141,6 +141,9 @@ private:
     float ItemInterpX;
     float ItemInterpY;
 
+    /** Ќачальное смещение рыскани€ между камерой и промежуточным элементом */
+    float InterpInitialYawOffset;
+
 public:
 
     FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
