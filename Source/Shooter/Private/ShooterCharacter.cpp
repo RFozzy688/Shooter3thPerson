@@ -202,9 +202,37 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void AShooterCharacter::FinishReloading()
 {
-    // TODO: Update AmmoMap
-
+    // Обновить боевое состояние
     CombatState = ECombatState::ECS_Unoccupied;
+    if (EquippedWeapon == nullptr) return;
+    const auto AmmoType{ EquippedWeapon->GetAmmoType() };
+
+    // Обновить карту боеприпасов
+    if (AmmoMap.Contains(AmmoType))
+    {
+        // Количество боеприпасов, которое персонаж носит с собой, для снаряженного оружия.
+        int32 CarriedAmmo = AmmoMap[AmmoType];
+
+        // Осталось места в магазине снаряженного оружия
+        const int32 MagEmptySpace =
+            EquippedWeapon->GetMagazineCapacity() -
+            EquippedWeapon->GetAmmo();
+
+        if (MagEmptySpace > CarriedAmmo)
+        {
+            // зарядить магазин всеми боеприпасами, которые у нас есть.
+            EquippedWeapon->ReloadAmmo(CarriedAmmo);
+            CarriedAmmo = 0;
+        }
+        else
+        {
+            // заполнить магазин
+            EquippedWeapon->ReloadAmmo(MagEmptySpace);
+            CarriedAmmo -= MagEmptySpace;
+        }
+
+        AmmoMap.Add(AmmoType, CarriedAmmo);
+    }
 }
 
 void AShooterCharacter::MoveForward(float Amount)
