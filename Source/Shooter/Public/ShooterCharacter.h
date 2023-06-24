@@ -94,6 +94,14 @@ protected:
     /** Проверяет, есть ли у нас боеприпасы типа снаряженного оружия. */
     bool CarryingAmmo();
 
+    /** Вызывается из Animation Blueprint с уведомлением Grab Clip */
+    UFUNCTION(BlueprintCallable)
+    void GrabClip();
+
+    /** Вызывается из Animation Blueprint с уведомлением Release Clip */
+    UFUNCTION(BlueprintCallable)
+    void ReleaseClip();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -251,6 +259,14 @@ private:
 
     UFUNCTION(BlueprintCallable)
     void FinishReloading();
+
+    /** Трансформация обоймы, когда мы впервые берем обойму во время перезарядки */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    FTransform ClipTransform;
+
+    /** Компонент сцены для прикрепления к руке персонажа во время перезарядки */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* HandSceneComponent;
 
 public:
 

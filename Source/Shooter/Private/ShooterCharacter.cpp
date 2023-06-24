@@ -68,7 +68,7 @@ AShooterCharacter::AShooterCharacter() :
 
     // персонаж не вращается, когда вращается контроллер. Контроллер влияет только на камеру.
     bUseControllerRotationPitch = false;
-    bUseControllerRotationYaw = true;
+    bUseControllerRotationYaw = false;
     bUseControllerRotationRoll = false;
 
     // Настраиваем движение персонажа
@@ -76,6 +76,9 @@ AShooterCharacter::AShooterCharacter() :
     GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f); // ... при этой частоте вращения
     GetCharacterMovement()->JumpZVelocity = 600.f; // скорость прыжка
     GetCharacterMovement()->AirControl = 0.2f; // контроль персонажа в воздухе
+
+    // Create Hand Scene Component 
+    HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComp"));
 }
 
 // Called when the game starts or when spawned
@@ -739,4 +742,26 @@ bool AShooterCharacter::CarryingAmmo()
     }
 
     return false;
+}
+
+void AShooterCharacter::GrabClip()
+{
+    if (EquippedWeapon == nullptr) return;
+    if (HandSceneComponent == nullptr) return;
+
+    // Индекс кости на экипированном оружии
+    int32 ClipBoneIndex{ EquippedWeapon->GetItemMesh()->GetBoneIndex(EquippedWeapon->GetClipBoneName()) };
+    // Сохранить трансформацию магазина
+    ClipTransform = EquippedWeapon->GetItemMesh()->GetBoneTransform(ClipBoneIndex);
+
+    FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepRelative, true);
+    HandSceneComponent->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("Hand_L")));
+    HandSceneComponent->SetWorldTransform(ClipTransform);
+
+    EquippedWeapon->SetMovingClip(true);
+}
+
+void AShooterCharacter::ReleaseClip()
+{
+    EquippedWeapon->SetMovingClip(false);
 }
