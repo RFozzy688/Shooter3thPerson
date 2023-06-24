@@ -68,7 +68,7 @@ AShooterCharacter::AShooterCharacter() :
 
     // персонаж не вращается, когда вращается контроллер. Контроллер влияет только на камеру.
     bUseControllerRotationPitch = false;
-    bUseControllerRotationYaw = false;
+    bUseControllerRotationYaw = true;
     bUseControllerRotationRoll = false;
 
     // Настраиваем движение персонажа
@@ -424,6 +424,11 @@ FVector AShooterCharacter::GetCameraInterpLocation()
 
 void AShooterCharacter::GetPickupItem(AItem* Item)
 {
+    if (Item->GetEquipSound())
+    {
+        UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
+    }
+
     auto Weapon = Cast<AWeapon>(Item);
     if (Weapon)
     {
@@ -619,6 +624,11 @@ void AShooterCharacter::SelectButtonPressed()
     if (TraceHitItem)
     {
         TraceHitItem->StartItemCurve(this);
+
+        if (TraceHitItem->GetPickupSound())
+        {
+            UGameplayStatics::PlaySound2D(this, TraceHitItem->GetPickupSound());
+        }
     }
 }
 

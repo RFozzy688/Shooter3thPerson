@@ -310,7 +310,7 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
     // Получить начальный поворот предмета
     const float ItemRotationYaw{ GetActorRotation().Yaw };
     // Начальное смещение рыскания между камерой и объектом
-    InterpInitialYawOffset = ItemRotationYaw - CameraRotationYaw; // (180)
+    InterpInitialYawOffset = 180; /*ItemRotationYaw - CameraRotationYaw;*/
 
 }
 
