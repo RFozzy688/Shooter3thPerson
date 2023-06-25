@@ -16,12 +16,19 @@ class SHOOTER_API UShooterAnimInstance : public UAnimInstance
     
 public:
 
+    UShooterAnimInstance();
+
     // работает как тик и вызывается в каждом кадре из анимационного блюпринта
     UFUNCTION(BlueprintCallable)
     void UpdateAnimationProperties(float DeltaTime);
 
     // подобна BeginPlay() для акторов
     virtual void NativeInitializeAnimation() override;
+
+protected:
+
+    /** Обработка поворота места, переменные */
+    void TurnInPlace();
 
 private:
 
@@ -44,6 +51,24 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
     float MovementOffsetYaw;
 
+    /** Смещение рыскания в последнем кадре */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+    float LastMovementOffsetYaw;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
     bool bAiming;
+
+    /** Рыскание персонажа в этом кадре */
+    float CharacterYaw;
+
+    /** Рыскание персонажа в предыдущем кадре */
+    float CharacterYawLastFrame;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+    float RootYawOffset;
+
+    /** Значение кривой вращения в этом кадре */
+    float RotationCurve;
+    /** Значение кривой вращения в последнем кадре */
+    float RotationCurveLastFrame;
 };
