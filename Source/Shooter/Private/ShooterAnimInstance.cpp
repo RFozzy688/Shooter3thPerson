@@ -15,7 +15,9 @@ UShooterAnimInstance::UShooterAnimInstance() :
     bAiming(false),
     CharacterYaw(0.f),
     CharacterYawLastFrame(0.f),
-    RootYawOffset(0.f)
+    RootYawOffset(0.f),
+    Pitch(0.f),
+    bReloading(false)
 {
 }
 
@@ -27,6 +29,8 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
     }
     if (ShooterCharacter)
     {
+        bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
+
         // Получить горизонтальную скорость персонажа из скорости
         FVector Velocity{ ShooterCharacter->GetVelocity() };
         Velocity.Z = 0; // это не будет влиять на скорость если персонаж летит вверх или падает вниз
@@ -63,6 +67,8 @@ void UShooterAnimInstance::NativeInitializeAnimation()
 void UShooterAnimInstance::TurnInPlace()
 {
     if (ShooterCharacter == nullptr) return;
+
+    Pitch = ShooterCharacter->GetBaseAimRotation().Pitch;
 
     if (Speed > 0)
     {

@@ -71,4 +71,12 @@ private:
     float RotationCurve;
     /** Значение кривой вращения в последнем кадре */
     float RotationCurveLastFrame;
+
+    /** Шаг вращения цели, используемый для смещения цели */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+    float Pitch;
+
+    /** Истинно при перезарядке, используется для предотвращения смещения прицеливания при перезарядке */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+    bool bReloading;
 };

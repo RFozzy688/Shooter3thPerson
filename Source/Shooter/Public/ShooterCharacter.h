@@ -296,4 +296,6 @@ public:
 
     // поднятие предмета с иртерполяцией
     void GetPickupItem(AItem* Item);
+
+    FORCEINLINE ECombatState GetCombatState() const { return CombatState; }
 };
