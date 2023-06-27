@@ -42,6 +42,9 @@ protected:
     /** Обработка поворота места, переменные */
     void TurnInPlace();
 
+    /** Обработка расчетов для наклона во время бега */
+    void Lean(float DeltaTime);
+
 private:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
@@ -70,11 +73,11 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
     bool bAiming;
 
-    /** Рыскание персонажа в этом кадре */
-    float CharacterYaw;
+    /** Рыскание персонажа в этом кадре; обновляется только когда персонаж стоит и не находится в воздухе */
+    float TIPCharacterYaw;
 
-    /** Рыскание персонажа в предыдущем кадре */
-    float CharacterYawLastFrame;
+    /** Рыскание персонажа в предыдущем кадре; обновляется только когда персонаж стоит и не находится в воздухе */
+    float TIPCharacterYawLastFrame;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
     float RootYawOffset;
@@ -95,4 +98,14 @@ private:
     /** Состояние смещения; используется для определения того, какое смещение цели использовать */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
     EOffsetState OffsetState;
+
+    /** Рыскать в этом кадре */
+    FRotator CharacterRotation;
+
+    /** Рыскать в предыдущем кадре */
+    FRotator CharacterRotationLastFrame;
+
+    /** Дельта рыскания, используемая для наклона в бегущем пространстве смешивания */
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Lean, meta = (AllowPrivateAccess = "true"))
+    float YawDelta;
 };
