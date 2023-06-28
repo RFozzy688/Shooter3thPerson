@@ -108,4 +108,8 @@ private:
     /** ƒельта рыскани€, используема€ дл€ наклона в бегущем пространстве смешивани€ */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Lean, meta = (AllowPrivateAccess = "true"))
     float YawDelta;
+
+    /** True при приседании */
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Crouching, meta = (AllowPrivateAccess = "true"))
+    bool bCrouching;
 };
