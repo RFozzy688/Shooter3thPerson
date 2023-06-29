@@ -104,6 +104,8 @@ protected:
 
     void CrouchButtonPressed();
 
+    virtual void Jump() override;
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -273,6 +275,14 @@ private:
     /** Правда при приседании */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
     bool bCrouching;
+
+    /** Обычная скорость передвижения */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+    float BaseMovementSpeed;
+
+    /** Скорость передвижения в приседе */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+    float CrouchMovementSpeed;
 
 public:
 

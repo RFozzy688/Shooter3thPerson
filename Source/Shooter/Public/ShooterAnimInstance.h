@@ -112,4 +112,12 @@ private:
     /** True при приседании */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Crouching, meta = (AllowPrivateAccess = "true"))
     bool bCrouching;
+
+    /** »зменение веса отдачи в зависимости от поворота на месте и прицеливани€ */
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Crouching, meta = (AllowPrivateAccess = "true"))
+    float RecoilWeight;
+
+    /** ѕравда при повороте на месте */
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    bool bTurningInPlace;
 };
