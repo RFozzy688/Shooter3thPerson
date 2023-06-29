@@ -15,6 +15,7 @@
 #include "Weapon.h"
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() :
@@ -53,7 +54,11 @@ AShooterCharacter::AShooterCharacter() :
     CombatState(ECombatState::ECS_Unoccupied),
     bCrouching(false),
     BaseMovementSpeed(650.f),
-    CrouchMovementSpeed(300.f)
+    CrouchMovementSpeed(300.f),
+    StandingCapsuleHalfHeight(88.f),
+    CrouchingCapsuleHalfHeight(44.f),
+    BaseGroundFriction(2.f),
+    CrouchingGroundFriction(100.f)
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -179,6 +184,9 @@ void AShooterCharacter::Tick(float DeltaTime)
 
     // количество пересеченных предметов
     TraceForItems();
+
+    // Интерполировать половину высоты капсулы на основе приседания/стояния
+    InterpCapsuleHalfHeight(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -793,10 +801,12 @@ void AShooterCharacter::CrouchButtonPressed()
     if (bCrouching)
     {
         GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+        GetCharacterMovement()->GroundFriction = CrouchingGroundFriction;
     }
     else
     {
         GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+        GetCharacterMovement()->GroundFriction = BaseGroundFriction;
     }
 }
 
@@ -811,4 +821,25 @@ void AShooterCharacter::Jump()
     {
         ACharacter::Jump();
     }
+}
+
+void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime)
+{
+    float TargetCapsuleHalfHeight{};
+    if (bCrouching)
+    {
+        TargetCapsuleHalfHeight = CrouchingCapsuleHalfHeight;
+    }
+    else
+    {
+        TargetCapsuleHalfHeight = StandingCapsuleHalfHeight;
+    }
+    const float InterpHalfHeight{ FMath::FInterpTo(GetCapsuleComponent()->GetScaledCapsuleHalfHeight(), TargetCapsuleHalfHeight, DeltaTime, 20.f) };
+
+    // Отрицательное значение при приседании; Положительное значение, если стоит
+    const float DeltaCapsuleHalfHeight{ InterpHalfHeight - GetCapsuleComponent()->GetScaledCapsuleHalfHeight() };
+    const FVector MeshOffset{ 0.f, 0.f, -DeltaCapsuleHalfHeight };
+    GetMesh()->AddLocalOffset(MeshOffset);
+
+    GetCapsuleComponent()->SetCapsuleHalfHeight(InterpHalfHeight);
 }

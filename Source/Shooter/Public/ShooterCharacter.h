@@ -106,6 +106,9 @@ protected:
 
     virtual void Jump() override;
 
+    /** Иртерполирование капсулы на половину высоты при приседании/стоянии */
+    void InterpCapsuleHalfHeight(float DeltaTime);
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -283,6 +286,25 @@ private:
     /** Скорость передвижения в приседе */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
     float CrouchMovementSpeed;
+
+    /** Текущая половина высоты капсулы */
+    float CurrentCapsuleHalfHeight;
+
+    /** Половина высоты капсулы, когда не приседаешь */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+    float StandingCapsuleHalfHeight;
+
+    /** Половина высоты капсулы при приседании */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+    float CrouchingCapsuleHalfHeight;
+
+    /** Трение о землю, не приседая */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+    float BaseGroundFriction;
+
+    /** Трение о землю при приседании */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+    float CrouchingGroundFriction;
 
 public:
 
