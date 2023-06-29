@@ -109,6 +109,9 @@ protected:
     /** Иртерполирование капсулы на половину высоты при приседании/стоянии */
     void InterpCapsuleHalfHeight(float DeltaTime);
 
+    void Aim();
+    void StopAiming();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -150,9 +153,11 @@ private:
     bool bAiming;
 
     /** Значение поля обзора камеры по умолчанию */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     float CameraDefaultFOV;
 
     /** Значение поля обзора камеры при увеличении */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     float CameraZoomedFOV;
 
     /** Текущее поле обзора в данном кадре */
@@ -305,6 +310,9 @@ private:
     /** Трение о землю при приседании */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
     float CrouchingGroundFriction;
+
+    /** Используется для определения момента нажатия кнопки прицеливания. */
+    bool bAimingButtonPressed;
 
 public:
 

@@ -58,7 +58,8 @@ AShooterCharacter::AShooterCharacter() :
     StandingCapsuleHalfHeight(88.f),
     CrouchingCapsuleHalfHeight(44.f),
     BaseGroundFriction(2.f),
-    CrouchingGroundFriction(100.f)
+    CrouchingGroundFriction(100.f),
+    bAimingButtonPressed(false)
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -147,12 +148,18 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
 
 void AShooterCharacter::AimingButtonPressed()
 {
-    bAiming = true;
+    bAimingButtonPressed = true;
+
+    if (CombatState != ECombatState::ECS_Reloading)
+    {
+        Aim();
+    }
 }
 
 void AShooterCharacter::AimingButtonReleased()
 {
-    bAiming = false;
+    bAimingButtonPressed = false;
+    StopAiming();
 }
 
 void AShooterCharacter::CameraInterpZoom(float DeltaTime)
@@ -222,6 +229,12 @@ void AShooterCharacter::FinishReloading()
 {
     // Обновить боевое состояние
     CombatState = ECombatState::ECS_Unoccupied;
+
+    if (bAimingButtonPressed)
+    {
+        Aim();
+    }
+
     if (EquippedWeapon == nullptr) return;
     const auto AmmoType{ EquippedWeapon->GetAmmoType() };
 
@@ -745,6 +758,11 @@ void AShooterCharacter::ReloadWeapon()
     // У нас есть боеприпасы правильного типа?
     if (CarryingAmmo() && !EquippedWeapon->ClipIsFull())
     {
+        if (bAiming)
+        {
+            StopAiming();
+        }
+
         CombatState = ECombatState::ECS_Reloading;
         UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
         if (AnimInstance && ReloadMontage)
@@ -842,4 +860,20 @@ void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime)
     GetMesh()->AddLocalOffset(MeshOffset);
 
     GetCapsuleComponent()->SetCapsuleHalfHeight(InterpHalfHeight);
+}
+
+void AShooterCharacter::Aim()
+{
+    bAiming = true;
+    GetCharacterMovement()->MaxWalkSpeed = 300.f;
+}
+
+void AShooterCharacter::StopAiming()
+{
+    bAiming = false;
+
+    if (!bCrouching)
+    {
+        GetCharacterMovement()->MaxWalkSpeed = 600.f;
+    }
 }
