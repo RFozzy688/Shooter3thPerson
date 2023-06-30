@@ -8,6 +8,8 @@
 #include "ShooterCharacter.h"
 #include "Curves/CurveVector.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AItem::AItem():
@@ -294,6 +296,12 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
 {
     // хранит дескриптор Character
     Character = Char;
+
+    if (PickupSound)
+    {
+        UGameplayStatics::PlaySound2D(this, PickupSound);
+    }
+
     // Сохранить начальное местоположение Item
     ItemInterpStartLocation = GetActorLocation();
     bInterping = true;
