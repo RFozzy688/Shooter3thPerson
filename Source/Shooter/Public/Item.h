@@ -30,6 +30,15 @@ enum class EItemState : uint8
     EIS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+UENUM(BlueprintType)
+enum class EItemType : uint8
+{
+    EIT_Ammo UMETA(DisplayName = "Ammo"),
+    EIT_Weapon UMETA(DisplayName = "Weapon"),
+
+    EIT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class SHOOTER_API AItem : public AActor
 {
@@ -72,6 +81,11 @@ protected:
 
     /** Обрабатывает интерполяцию элементов в состоянии EquipInterping. */
     void ItemInterp(float DeltaTime);
+
+    /** Получить местоположение взаимодействия на основе типа элемента */
+    FVector GetInterpLocation();
+
+    void PlayPickupSound();
 
 public:	
     // Called every frame
@@ -155,6 +169,14 @@ private:
     /** Звук, воспроизводимый при экипировке предмета */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
     USoundCue* EquipSound;
+
+    /** Enum для типа элемента, которым является этот элемент */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    EItemType ItemType;
+
+    /** Индекс места интерполяции, в который интерпретируется этот элемент */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    int32 InterpLocIndex;
 
 public:
 

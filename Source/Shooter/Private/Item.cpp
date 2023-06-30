@@ -24,7 +24,9 @@ AItem::AItem():
     bInterping(false),
     ItemInterpX(0.f),
     ItemInterpY(0.f),
-    InterpInitialYawOffset(0.f)
+    InterpInitialYawOffset(0.f),
+    ItemType(EItemType::EIT_MAX),
+    InterpLocIndex(0)
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -212,6 +214,8 @@ void AItem::FinishInterping()
 
     if (Character)
     {
+        // Вычтите 1 из счетчика элементов структуры местоположения промежуточного звена.
+        Character->IncrementInterpLocItemCount(InterpLocIndex, -1);
         Character->GetPickupItem(this);
     }
 
@@ -233,7 +237,7 @@ void AItem::ItemInterp(float DeltaTime)
         // Получить начальное местоположение элемента, когда кривая начинается
         FVector ItemLocation = ItemInterpStartLocation;
         // Получить местоположение перед камерой
-        const FVector CameraInterpLocation{ Character->GetCameraInterpLocation() };
+        const FVector CameraInterpLocation{ GetInterpLocation()/*Character->GetCameraInterpLocation()*/ };
 
         // Вектор от объекта к местоположению камеры, X и Y обнуляются
         const FVector ItemToCamera{ FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z) };
@@ -276,6 +280,37 @@ void AItem::ItemInterp(float DeltaTime)
     }
 }
 
+FVector AItem::GetInterpLocation()
+{
+    if (Character == nullptr) return FVector(0.f);
+
+    //switch (ItemType)
+    //{
+    //case EItemType::EIT_Ammo:
+    //    return Character->GetInterpLocation(InterpLocIndex).SceneComponent->GetComponentLocation();
+    //    break;
+    //
+    //case EItemType::EIT_Weapon:
+    //    return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
+    //    break;
+    //}
+    //
+    //return FVector();
+
+    if (ItemType == EItemType::EIT_Ammo)
+    {
+        return Character->GetInterpLocation(InterpLocIndex).SceneComponent->GetComponentLocation();
+    }
+    else
+    {
+        return Character->GetCameraInterpLocation();
+    }
+}
+
+void AItem::PlayPickupSound()
+{
+}
+
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
@@ -296,6 +331,11 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
 {
     // хранит дескриптор Character
     Character = Char;
+
+    // Получить индекс массива в InterpLocations с наименьшим количеством элементов
+    InterpLocIndex = Character->GetInterpLocationIndex();
+    // Добавьте 1 к счетчику элементов для этой структуры местоположения промежуточного звена.
+    Character->IncrementInterpLocItemCount(InterpLocIndex, 1);
 
     if (PickupSound)
     {

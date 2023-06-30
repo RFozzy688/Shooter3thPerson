@@ -17,6 +17,20 @@ enum class ECombatState : uint8
     ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+USTRUCT(BlueprintType)
+struct FInterpLocation
+{
+    GENERATED_BODY()
+
+    // Компонент сцены для использования в качестве его местоположения для интерференции
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    USceneComponent* SceneComponent;
+
+    // Количество элементов, интерактивных в этом месте композиции сцены
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    int32 ItemCount;
+};
+
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -113,6 +127,8 @@ protected:
     void StopAiming();
 
     void PickupAmmo(class AAmmo* Ammo);
+
+    void InitializeInterpLocations();
 
 public:	
     // Called every frame
@@ -316,6 +332,31 @@ private:
     /** Используется для определения момента нажатия кнопки прицеливания. */
     bool bAimingButtonPressed;
 
+    //UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    //USceneComponent* WeaponInterpComp;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp1;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp2;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp3;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp4;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp5;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp6;
+
+    /** Массив структур местоположения взаимодействия */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    TArray<FInterpLocation> InterpLocations;
+
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -347,4 +388,10 @@ public:
 
     FORCEINLINE ECombatState GetCombatState() const { return CombatState; }
     FORCEINLINE bool GetCrouching() const { return bCrouching; }
+    FInterpLocation GetInterpLocation(int32 Index);
+
+    // Возвращает индекс в массиве InterpLocations с наименьшим значением ItemCount.
+    int32 GetInterpLocationIndex();
+
+    void IncrementInterpLocItemCount(int32 Index, int32 Amount);
 };
