@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Item.h"
+#include "AmmoType.h"
 #include "Ammo.generated.h"
 
 /**
@@ -24,12 +25,20 @@ protected:
 
     virtual void BeginPlay() override;
 
+    // Переопределить SetItemProperties, чтобы мы могли установить свойства AmmoMesh.
+    virtual void SetItemProperties(EItemState State) override;
+
 private:
     /** Mesh для подбора боеприпасов */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
     UStaticMeshComponent* AmmoMesh;
 
+    /** Тип патрона для боеприпаса */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo, meta = (AllowPrivateAccess = "true"))
+    EAmmoType AmmoType;
+
 public:
 
     FORCEINLINE UStaticMeshComponent* GetAmmoMesh() const { return AmmoMesh; }
+    FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
 };

@@ -65,7 +65,7 @@ protected:
     void SetActiveStars();
 
     // устанавливает свойства компонента предмета в зависимости от базового состояния
-    void SetItemProperties(EItemState State);
+    virtual void SetItemProperties(EItemState State);
 
     /** Вызывается, когда ItemInterpTimer завершен */
     void FinishInterping();
@@ -166,6 +166,7 @@ public:
     FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
     FORCEINLINE USoundCue* GetPickupSound() const { return PickupSound; }
     FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
+    FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 
     /** Вызывается из класса AShooterCharacter */
     void StartItemCurve(AShooterCharacter* Char);
