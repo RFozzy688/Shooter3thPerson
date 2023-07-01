@@ -27,7 +27,7 @@ void AAmmo::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     // Обработка Interping Item в состоянии EquipInterping
-    ItemInterp(DeltaTime);
+    //ItemInterp(DeltaTime);
 }
 
 void AAmmo::BeginPlay()

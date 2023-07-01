@@ -91,8 +91,8 @@ AShooterCharacter::AShooterCharacter() :
     HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComp"));
 
     // —оздать компоненты интерпол€ции
-    //WeaponInterpComp = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Interpolation Component"));
-    //WeaponInterpComp->SetupAttachment(GetFollowCamera());
+    WeaponInterpComp = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Interpolation Component"));
+    WeaponInterpComp->SetupAttachment(GetFollowCamera());
 
     InterpComp1 = CreateDefaultSubobject<USceneComponent>(TEXT("Interpolation Component 1"));
     InterpComp1->SetupAttachment(GetFollowCamera());
@@ -467,14 +467,14 @@ void AShooterCharacter::IncrementOverlappedItemCount(int8 Amount)
     }
 }
 
-FVector AShooterCharacter::GetCameraInterpLocation()
-{
-    const FVector CameraWorldLocation{ FollowCamera->GetComponentLocation() };
-    const FVector CameraForward{ FollowCamera->GetForwardVector() };
-    // Desired = CameraWorldLocation + Forward * A + Up * B
-    return CameraWorldLocation + CameraForward * CameraInterpDistance
-        + FVector(0.f, 0.f, CameraInterpElevation);
-}
+//FVector AShooterCharacter::GetCameraInterpLocation()
+//{
+//    const FVector CameraWorldLocation{ FollowCamera->GetComponentLocation() };
+//    const FVector CameraForward{ FollowCamera->GetForwardVector() };
+//    // Desired = CameraWorldLocation + Forward * A + Up * B
+//    return CameraWorldLocation + CameraForward * CameraInterpDistance
+//        + FVector(0.f, 0.f, CameraInterpElevation);
+//}
 
 void AShooterCharacter::GetPickupItem(AItem* Item)
 {
@@ -940,8 +940,8 @@ void AShooterCharacter::PickupAmmo(AAmmo* Ammo)
 
 void AShooterCharacter::InitializeInterpLocations()
 {
-    //FInterpLocation WeaponLocation{ WeaponInterpComp, 0 };
-    //InterpLocations.Add(WeaponLocation);
+    FInterpLocation WeaponLocation{ WeaponInterpComp, 0 };
+    InterpLocations.Add(WeaponLocation);
 
     FInterpLocation InterpLoc1{ InterpComp1, 0 };
     InterpLocations.Add(InterpLoc1);

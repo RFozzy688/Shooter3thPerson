@@ -18,6 +18,8 @@ AWeapon::AWeapon() :
 
 void AWeapon::Tick(float DeltaTime)
 {
+    Super::Tick(DeltaTime);
+
     // Держит оружие в вертикальном положении
     if (GetItemState() == EItemState::EIS_Falling && bFalling)
     {
@@ -26,7 +28,7 @@ void AWeapon::Tick(float DeltaTime)
     }
 
     // Обработка Interping Item в состоянии EquipInterping
-    ItemInterp(DeltaTime);
+    //ItemInterp(DeltaTime);
 }
 
 void AWeapon::ThrowWeapon()

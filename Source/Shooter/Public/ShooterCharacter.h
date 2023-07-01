@@ -332,8 +332,8 @@ private:
     /** »спользуетс€ дл€ определени€ момента нажати€ кнопки прицеливани€. */
     bool bAimingButtonPressed;
 
-    //UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    //USceneComponent* WeaponInterpComp;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* WeaponInterpComp;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     USceneComponent* InterpComp1;
@@ -381,7 +381,7 @@ public:
     void IncrementOverlappedItemCount(int8 Amount);
 
     // возращает коор. точки перед камерой
-    FVector GetCameraInterpLocation();
+    //FVector GetCameraInterpLocation();
 
     // подн€тие предмета с иртерпол€цией
     void GetPickupItem(AItem* Item);

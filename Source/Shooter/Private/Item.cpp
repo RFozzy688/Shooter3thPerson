@@ -237,7 +237,7 @@ void AItem::ItemInterp(float DeltaTime)
         // Получить начальное местоположение элемента, когда кривая начинается
         FVector ItemLocation = ItemInterpStartLocation;
         // Получить местоположение перед камерой
-        const FVector CameraInterpLocation{ GetInterpLocation()/*Character->GetCameraInterpLocation()*/ };
+        const FVector CameraInterpLocation{ GetInterpLocation() };
 
         // Вектор от объекта к местоположению камеры, X и Y обнуляются
         const FVector ItemToCamera{ FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z) };
@@ -303,7 +303,8 @@ FVector AItem::GetInterpLocation()
     }
     else
     {
-        return Character->GetCameraInterpLocation();
+        //return Character->GetCameraInterpLocation();
+        return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
     }
 }
 
@@ -317,7 +318,7 @@ void AItem::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     // Обработка Interping Item в состоянии EquipInterping
-    //ItemInterp(DeltaTime);
+    ItemInterp(DeltaTime);
     //UE_LOG(LogTemp, Warning, TEXT("Character: %d"), 1);
 }
 
