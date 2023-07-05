@@ -310,6 +310,15 @@ FVector AItem::GetInterpLocation()
 
 void AItem::PlayPickupSound()
 {
+    if (Character && Character->ShouldPlayPickupSound())
+    {
+        Character->StartPickupSoundTimer();
+
+        if (PickupSound)
+        {
+            UGameplayStatics::PlaySound2D(this, PickupSound);
+        }
+    }
 }
 
 // Called every frame
@@ -320,6 +329,18 @@ void AItem::Tick(float DeltaTime)
     // Обработка Interping Item в состоянии EquipInterping
     ItemInterp(DeltaTime);
     //UE_LOG(LogTemp, Warning, TEXT("Character: %d"), 1);
+}
+
+void AItem::PlayEquipSound()
+{
+    if (Character && Character->ShouldPlayEquipSound())
+    {
+        Character->StartEquipSoundTimer();
+        if (EquipSound)
+        {
+            UGameplayStatics::PlaySound2D(this, EquipSound);
+        }
+    }
 }
 
 void AItem::SetItemState(EItemState State)
@@ -338,10 +359,7 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
     // Добавьте 1 к счетчику элементов для этой структуры местоположения промежуточного звена.
     Character->IncrementInterpLocItemCount(InterpLocIndex, 1);
 
-    if (PickupSound)
-    {
-        UGameplayStatics::PlaySound2D(this, PickupSound);
-    }
+    PlayPickupSound();
 
     // Сохранить начальное местоположение Item
     ItemInterpStartLocation = GetActorLocation();
