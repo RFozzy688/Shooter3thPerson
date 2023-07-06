@@ -89,6 +89,11 @@ protected:
 
     virtual void InitializeCustomDepth();
 
+    virtual void OnConstruction(const FTransform& Transform) override;
+
+    void EnableGlowMaterial();
+    void DisableGlowMaterial();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -182,6 +187,18 @@ private:
     /** »ндекс места интерпол€ции, в который интерпретируетс€ этот элемент */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
     int32 InterpLocIndex;
+
+    /** »ндекс материала, который мы хотели бы изменить во врем€ выполнени€ */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    int32 MaterialIndex;
+
+    /** ƒинамический экземпл€р, который мы можем изменить во врем€ выполнени€ */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    UMaterialInstanceDynamic* DynamicMaterialInstance;
+
+    /** Ёкземпл€р материала, используемый с экземпл€ром динамического материала */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    UMaterialInstance* MaterialInstance;
 
 public:
 
