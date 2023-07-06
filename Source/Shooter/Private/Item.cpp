@@ -27,7 +27,8 @@ AItem::AItem():
     InterpInitialYawOffset(0.f),
     ItemType(EItemType::EIT_MAX),
     InterpLocIndex(0),
-    MaterialIndex(0)
+    MaterialIndex(0),
+    bCanChangeCustomDepth(true)
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -227,7 +228,8 @@ void AItem::FinishInterping()
     SetActorScale3D(FVector(1.f));
 
     DisableGlowMaterial();
-
+    bCanChangeCustomDepth = true;
+    DisableCustomDepth();
 }
 
 void AItem::ItemInterp(float DeltaTime)
@@ -419,15 +421,22 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
     // Начальное смещение рыскания между камерой и объектом
     InterpInitialYawOffset = 180; /*ItemRotationYaw - CameraRotationYaw;*/
 
+    bCanChangeCustomDepth = false;
 }
 
 void AItem::EnableCustomDepth()
 {
-    ItemMesh->SetRenderCustomDepth(true);
+    if (bCanChangeCustomDepth)
+    {
+        ItemMesh->SetRenderCustomDepth(true);
+    }
 }
 
 void AItem::DisableCustomDepth()
 {
-    ItemMesh->SetRenderCustomDepth(false);
+    if (bCanChangeCustomDepth)
+    {
+        ItemMesh->SetRenderCustomDepth(false);
+    }
 }
 
