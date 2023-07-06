@@ -131,6 +131,8 @@ void AShooterCharacter::BeginPlay()
 
     // Spawn дефолтного оружия и прикрепление его к мешу
     EquipWeapon(SpawnDefaultWeapon());
+    EquippedWeapon->DisableCustomDepth();
+    EquippedWeapon->DisableGlowMaterial();
 
     InitializeAmmoMap();
 
