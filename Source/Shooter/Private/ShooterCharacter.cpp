@@ -632,6 +632,7 @@ void AShooterCharacter::TraceForItems()
             {
                 // Показать виджет получения предмета
                 TraceHitItem->GetPickupWidget()->SetVisibility(true);
+                TraceHitItem->EnableCustomDepth();
             }
 
             // AItem в который мы попали в последнем кадре 
@@ -642,6 +643,7 @@ void AShooterCharacter::TraceForItems()
                     // если мы не смотрим на AItem из предыдущего кадра, то убираем уго
                     // Или AItem имеет значение null.
                     TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+                    TraceHitItemLastFrame->DisableCustomDepth();
                 }
             }
             // Сохранить ссылку на HitItem для следующего кадра
@@ -653,6 +655,7 @@ void AShooterCharacter::TraceForItems()
         // Больше никаких элементов не перекрывается,
          // Последний кадр элемента не должен отображать виджет
         TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+        TraceHitItemLastFrame->DisableCustomDepth();
     }
 }
 

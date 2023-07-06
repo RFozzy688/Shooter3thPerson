@@ -69,6 +69,9 @@ void AItem::BeginPlay()
 
     // Установить свойства элемента на основе ItemState
     SetItemProperties(ItemState);
+
+    // устанавливает пользовательскую глубину как выкл
+    InitializeCustomDepth();
 }
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -321,6 +324,11 @@ void AItem::PlayPickupSound()
     }
 }
 
+void AItem::InitializeCustomDepth()
+{
+    DisableCustomDepth();
+}
+
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
@@ -379,5 +387,15 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
     // Начальное смещение рыскания между камерой и объектом
     InterpInitialYawOffset = 180; /*ItemRotationYaw - CameraRotationYaw;*/
 
+}
+
+void AItem::EnableCustomDepth()
+{
+    ItemMesh->SetRenderCustomDepth(true);
+}
+
+void AItem::DisableCustomDepth()
+{
+    ItemMesh->SetRenderCustomDepth(false);
 }
 

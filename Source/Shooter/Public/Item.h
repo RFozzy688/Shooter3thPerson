@@ -87,6 +87,8 @@ protected:
 
     void PlayPickupSound();
 
+    virtual void InitializeCustomDepth();
+
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -195,4 +197,7 @@ public:
 
     /** Вызывается из класса AShooterCharacter */
     void StartItemCurve(AShooterCharacter* Char);
+
+    virtual void EnableCustomDepth();
+    virtual void DisableCustomDepth();
 };
