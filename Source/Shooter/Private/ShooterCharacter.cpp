@@ -131,6 +131,7 @@ void AShooterCharacter::BeginPlay()
 
     // Spawn дефолтного оружия и прикрепление его к мешу
     EquipWeapon(SpawnDefaultWeapon());
+    Inventory.Add(EquippedWeapon);
     EquippedWeapon->DisableCustomDepth();
     EquippedWeapon->DisableGlowMaterial();
 
@@ -500,7 +501,14 @@ void AShooterCharacter::GetPickupItem(AItem* Item)
     auto Weapon = Cast<AWeapon>(Item);
     if (Weapon)
     {
-        SwapWeapon(Weapon);
+        if (Inventory.Num() < INVENTORY_CAPACITY)
+        {
+            Inventory.Add(Weapon);
+        }
+        else // Инвентарь полон! Обмен с экипированным оружием
+        {
+            SwapWeapon(Weapon);
+        }
     }
 
     auto Ammo = Cast<AAmmo>(Item);
