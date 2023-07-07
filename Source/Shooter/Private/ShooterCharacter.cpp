@@ -132,6 +132,7 @@ void AShooterCharacter::BeginPlay()
     // Spawn дефолтного оружия и прикрепление его к мешу
     EquipWeapon(SpawnDefaultWeapon());
     Inventory.Add(EquippedWeapon);
+    EquippedWeapon->SetSlotIndex(0);
     EquippedWeapon->DisableCustomDepth();
     EquippedWeapon->DisableGlowMaterial();
 
@@ -503,7 +504,9 @@ void AShooterCharacter::GetPickupItem(AItem* Item)
     {
         if (Inventory.Num() < INVENTORY_CAPACITY)
         {
+            Weapon->SetSlotIndex(Inventory.Num());
             Inventory.Add(Weapon);
+            Weapon->SetItemState(EItemState::EIS_PickedUp);
         }
         else // Инвентарь полон! Обмен с экипированным оружием
         {
@@ -692,6 +695,16 @@ void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
         {
             // Прикрепите оружие к сокету руки RightHandSocket
             HandSocket->AttachActor(WeaponToEquip, GetMesh());
+        }
+
+        if (EquippedWeapon == nullptr)
+        {
+            // -1 == no EquippedWeapon yet. No need to reverse the icon animation
+            EquipItemDelegate.Broadcast(-1, WeaponToEquip->GetSlotIndex());
+        }
+        else
+        {
+            EquipItemDelegate.Broadcast(EquippedWeapon->GetSlotIndex(), WeaponToEquip->GetSlotIndex());
         }
 
         // Установите EquippedWeapon на недавно созданное оружие.

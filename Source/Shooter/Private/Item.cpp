@@ -33,7 +33,8 @@ AItem::AItem():
     GlowAmount(150.f),
     FresnelExponent(3.f),
     FresnelReflectFraction(4.f),
-    PulseCurveTime(5.f)
+    PulseCurveTime(5.f),
+    SlotIndex(0)
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -180,8 +181,6 @@ void AItem::SetItemProperties(EItemState State)
         CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
         CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         break;
-    case EItemState::EIS_PickedUp:
-        break;
     case EItemState::EIS_Equipped:
         PickupWidget->SetVisibility(false);
         // Set mesh properties
@@ -213,6 +212,21 @@ void AItem::SetItemProperties(EItemState State)
         CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
         CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         break;
+    case EItemState::EIS_PickedUp:
+        PickupWidget->SetVisibility(false);
+        // Set mesh properties
+        ItemMesh->SetSimulatePhysics(false);
+        ItemMesh->SetEnableGravity(false);
+        ItemMesh->SetVisibility(false);
+        ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+        ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        // Set AreaSphere properties
+        AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+        AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        // Set CollisionBox properties
+        CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+        CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        break;
     case EItemState::EIS_MAX:
         break;
     default:
@@ -229,7 +243,7 @@ void AItem::FinishInterping()
         // Вычтите 1 из счетчика элементов структуры местоположения промежуточного звена.
         Character->IncrementInterpLocItemCount(InterpLocIndex, -1);
         Character->GetPickupItem(this);
-        SetItemState(EItemState::EIS_PickedUp);
+        //SetItemState(EItemState::EIS_PickedUp);
     }
 
     // Вернуть масштаб в нормальное состояние
@@ -301,28 +315,28 @@ FVector AItem::GetInterpLocation()
 {
     if (Character == nullptr) return FVector(0.f);
 
-    //switch (ItemType)
-    //{
-    //case EItemType::EIT_Ammo:
-    //    return Character->GetInterpLocation(InterpLocIndex).SceneComponent->GetComponentLocation();
-    //    break;
-    //
-    //case EItemType::EIT_Weapon:
-    //    return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
-    //    break;
-    //}
-    //
-    //return FVector();
-
-    if (ItemType == EItemType::EIT_Ammo)
+    switch (ItemType)
     {
+    case EItemType::EIT_Ammo:
         return Character->GetInterpLocation(InterpLocIndex).SceneComponent->GetComponentLocation();
-    }
-    else
-    {
-        //return Character->GetCameraInterpLocation();
+        break;
+    
+    case EItemType::EIT_Weapon:
         return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
+        break;
     }
+    
+    return FVector();
+
+    //if (ItemType == EItemType::EIT_Ammo)
+    //{
+    //    return Character->GetInterpLocation(InterpLocIndex).SceneComponent->GetComponentLocation();
+    //}
+    //else
+    //{
+    //    //return Character->GetCameraInterpLocation();
+    //    return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
+    //}
 }
 
 void AItem::PlayPickupSound()
@@ -352,7 +366,7 @@ void AItem::OnConstruction(const FTransform& Transform)
     }
 
     EnableGlowMaterial();
-    DisableCustomDepth();
+    //DisableCustomDepth();
 }
 
 void AItem::EnableGlowMaterial()

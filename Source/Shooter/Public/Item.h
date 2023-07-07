@@ -227,6 +227,22 @@ private:
     UPROPERTY(VisibleAnywhere, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
     float FresnelReflectFraction;
 
+    /** Фон для этого предмета в инвентаре */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+    UTexture2D* IconBackground;
+
+    /** Иконка для этого предмета в инвентаре */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+    UTexture2D* IconItem;
+
+    /** Иконка боеприпасов для этого предмета в инвентаре */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+    UTexture2D* AmmoItem;
+
+    /** Слот в массиве Inventory */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+    int32 SlotIndex;
+
 public:
 
     FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
@@ -238,6 +254,8 @@ public:
     FORCEINLINE USoundCue* GetPickupSound() const { return PickupSound; }
     FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
     FORCEINLINE int32 GetItemCount() const { return ItemCount; }
+    FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
+    FORCEINLINE void SetSlotIndex(int32 Index) { SlotIndex = Index; }
 
     /** Вызывается из класса AShooterCharacter */
     void StartItemCurve(AShooterCharacter* Char);
