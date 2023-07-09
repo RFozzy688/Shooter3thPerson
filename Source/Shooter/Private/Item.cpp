@@ -201,6 +201,7 @@ void AItem::SetItemProperties(EItemState State)
         ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
         ItemMesh->SetSimulatePhysics(true);
         ItemMesh->SetEnableGravity(true);
+        ItemMesh->SetVisibility(true);
         ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
         ItemMesh->SetCollisionResponseToChannel(
             ECollisionChannel::ECC_WorldStatic,
@@ -243,7 +244,6 @@ void AItem::FinishInterping()
         // Вычтите 1 из счетчика элементов структуры местоположения промежуточного звена.
         Character->IncrementInterpLocItemCount(InterpLocIndex, -1);
         Character->GetPickupItem(this);
-        //SetItemState(EItemState::EIS_PickedUp);
     }
 
     // Вернуть масштаб в нормальное состояние
