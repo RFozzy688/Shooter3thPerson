@@ -13,6 +13,7 @@ enum class ECombatState : uint8
     ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),
     ECS_FireTimerInProgress UMETA(DisplayName = "FireTimerInProgress"),
     ECS_Reloading UMETA(DisplayName = "Reloading"),
+    ECS_Equipping UMETA(DisplayName = "Equipping"),
 
     ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
@@ -298,8 +299,15 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     UAnimMontage* ReloadMontage;
 
+    /** Монтаж анимации экипировывания */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    UAnimMontage* EquipMontage;
+
     UFUNCTION(BlueprintCallable)
     void FinishReloading();
+
+    UFUNCTION(BlueprintCallable)
+    void FinishEquipping();
 
     /** Трансформация обоймы, когда мы впервые берем обойму во время перезарядки */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
