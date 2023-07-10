@@ -339,15 +339,24 @@ FVector AItem::GetInterpLocation()
     //}
 }
 
-void AItem::PlayPickupSound()
+void AItem::PlayPickupSound(bool bForcePlaySound)
 {
-    if (Character && Character->ShouldPlayPickupSound())
+    if (Character)
     {
-        Character->StartPickupSoundTimer();
-
-        if (PickupSound)
+        if (bForcePlaySound)
         {
-            UGameplayStatics::PlaySound2D(this, PickupSound);
+            if (PickupSound)
+            {
+                UGameplayStatics::PlaySound2D(this, PickupSound);
+            }
+        }
+        else if (Character->ShouldPlayPickupSound())
+        {
+            Character->StartPickupSoundTimer();
+            if (PickupSound)
+            {
+                UGameplayStatics::PlaySound2D(this, PickupSound);
+            }
         }
     }
 }
@@ -441,14 +450,24 @@ void AItem::Tick(float DeltaTime)
     UpdatePulse();
 }
 
-void AItem::PlayEquipSound()
+void AItem::PlayEquipSound(bool bForcePlaySound)
 {
-    if (Character && Character->ShouldPlayEquipSound())
+    if (Character)
     {
-        Character->StartEquipSoundTimer();
-        if (EquipSound)
+        if (bForcePlaySound)
         {
-            UGameplayStatics::PlaySound2D(this, EquipSound);
+            if (EquipSound)
+            {
+                UGameplayStatics::PlaySound2D(this, EquipSound);
+            }
+        }
+        else if (Character->ShouldPlayEquipSound())
+        {
+            Character->StartEquipSoundTimer();
+            if (EquipSound)
+            {
+                UGameplayStatics::PlaySound2D(this, EquipSound);
+            }
         }
     }
 }
@@ -459,7 +478,7 @@ void AItem::SetItemState(EItemState State)
     SetItemProperties(State);
 }
 
-void AItem::StartItemCurve(AShooterCharacter* Char)
+void AItem::StartItemCurve(AShooterCharacter* Char, bool bForcePlaySound)
 {
     // хранит дескриптор Character
     Character = Char;
@@ -469,7 +488,7 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
     // Добавьте 1 к счетчику элементов для этой структуры местоположения промежуточного звена.
     Character->IncrementInterpLocItemCount(InterpLocIndex, 1);
 
-    PlayPickupSound();
+    PlayPickupSound(bForcePlaySound);
 
     // Сохранить начальное местоположение Item
     ItemInterpStartLocation = GetActorLocation();
