@@ -80,7 +80,7 @@ protected:
     class AWeapon* SpawnDefaultWeapon();
 
     /** Берет оружие и прикрепляет его к сетке */
-    void EquipWeapon(AWeapon* WeaponToEquip);
+    void EquipWeapon(AWeapon* WeaponToEquip, bool bSwapping = false);
 
     /** Сброс оружия на землю */
     void DropWeapon();
