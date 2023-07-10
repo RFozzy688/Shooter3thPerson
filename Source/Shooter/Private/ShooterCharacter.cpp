@@ -665,6 +665,17 @@ void AShooterCharacter::TraceForItems()
                 // Показать виджет получения предмета
                 TraceHitItem->GetPickupWidget()->SetVisibility(true);
                 TraceHitItem->EnableCustomDepth();
+
+                if (Inventory.Num() >= INVENTORY_CAPACITY)
+                {
+                    // Inventory is full
+                    TraceHitItem->SetCharacterInventoryFull(true);
+                }
+                else
+                {
+                    // Inventory has room
+                    TraceHitItem->SetCharacterInventoryFull(false);
+                }
             }
 
             // AItem в который мы попали в последнем кадре 
