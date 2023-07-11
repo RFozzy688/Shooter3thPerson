@@ -105,6 +105,7 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
         if (ShooterCharacter)
         {
             ShooterCharacter->IncrementOverlappedItemCount(-1);
+            ShooterCharacter->UnHighlightInventorySlot();
         }
     }
 }
@@ -245,6 +246,8 @@ void AItem::FinishInterping()
         // Вычтите 1 из счетчика элементов структуры местоположения промежуточного звена.
         Character->IncrementInterpLocItemCount(InterpLocIndex, -1);
         Character->GetPickupItem(this);
+
+        Character->UnHighlightInventorySlot();
     }
 
     // Вернуть масштаб в нормальное состояние

@@ -33,6 +33,7 @@ struct FInterpLocation
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquipItemDelegate, int32, CurrentSlotIndex, int32, NewSlotIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHighlightIconDelegate, int32, SlotIndex, bool, bStartAnimation);
 
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
@@ -141,6 +142,10 @@ protected:
     void FiveKeyPressed();
 
     void ExchangeInventoryItems(int32 CurrentItemIndex, int32 NewItemIndex);
+
+    int32 GetEmptyInventorySlot();
+
+    void HighlightInventorySlot();
 
 public:	
     // Called every frame
@@ -403,6 +408,14 @@ private:
     UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
     FEquipItemDelegate EquipItemDelegate;
 
+    /** Делегат для отправки информации о слоте для воспроизведения анимации значка */
+    UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
+    FHighlightIconDelegate HighlightIconDelegate;
+
+    /** Индекс выделенного в данный момент слота */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+    int32 HighlightedSlot;
+
 public:
 
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -446,4 +459,6 @@ public:
 
     void StartPickupSoundTimer();
     void StartEquipSoundTimer();
+
+    void UnHighlightInventorySlot();
 };
