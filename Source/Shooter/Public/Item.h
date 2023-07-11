@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/DataTable.h"
 #include "Item.generated.h"
 
 UENUM(BlueprintType)
@@ -37,6 +38,27 @@ enum class EItemType : uint8
     EIT_Weapon UMETA(DisplayName = "Weapon"),
 
     EIT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+USTRUCT(BlueprintType)
+struct FItemRarityTable : public FTableRowBase
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FLinearColor GlowColor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FLinearColor LightColor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FLinearColor DarkColor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 NumberOfStars;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D* IconBackground;
 };
 
 UCLASS()
@@ -130,7 +152,7 @@ private:
     int32 ItemCount;
 
     /** Item rarity - определяет количество звезд в Pickup Widget */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Rarity, meta = (AllowPrivateAccess = "true"))
     EItemRarity ItemRarity;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
@@ -227,10 +249,6 @@ private:
     UPROPERTY(VisibleAnywhere, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
     float FresnelReflectFraction;
 
-    /** Фон для этого предмета в инвентаре */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
-    UTexture2D* IconBackground;
-
     /** Иконка для этого предмета в инвентаре */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
     UTexture2D* IconItem;
@@ -246,6 +264,30 @@ private:
     /** True когда инвентарь персонажа полон */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
     bool bCharacterInventoryFull;
+
+    /** Таблица редкости предметов */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+    class UDataTable* ItemRarityDataTable;
+
+    /** Цвет в светящемся материале */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta = (AllowPrivateAccess = "true"))
+    FLinearColor GlowColor;
+
+    /** Светлый цвет в виджете пикапа */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta = (AllowPrivateAccess = "true"))
+    FLinearColor LightColor;
+
+    /** Темный цвет в виджете пикапа */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta = (AllowPrivateAccess = "true"))
+    FLinearColor DarkColor;
+
+    /** Количество звезд в виджете пикапа */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta = (AllowPrivateAccess = "true"))
+    int32 NumberOfStars;
+
+    /** Фоновая иконка для инвентаря */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta = (AllowPrivateAccess = "true"))
+    UTexture2D* IconBackground;
 
 public:
 
