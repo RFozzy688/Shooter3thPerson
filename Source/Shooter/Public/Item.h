@@ -301,12 +301,20 @@ public:
     void SetItemState(EItemState State);
     FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
     FORCEINLINE USoundCue* GetPickupSound() const { return PickupSound; }
+    FORCEINLINE void SetPickupSound(USoundCue* Sound) { PickupSound = Sound; }
     FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
+    FORCEINLINE void SetEquipSound(USoundCue* Sound) { EquipSound = Sound; }
     FORCEINLINE int32 GetItemCount() const { return ItemCount; }
     FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
     FORCEINLINE void SetSlotIndex(int32 Index) { SlotIndex = Index; }
     FORCEINLINE void SetCharacter(AShooterCharacter* Char) { Character = Char; }
     FORCEINLINE void SetCharacterInventoryFull(bool bFull) { bCharacterInventoryFull = bFull; }
+    FORCEINLINE void SetItemName(FString Name) { ItemName = Name; }
+
+    // Установить значок предмета для инвентаря
+    FORCEINLINE void SetIconItem(UTexture2D* Icon) { IconItem = Icon; }
+    // Установите значок боеприпасов для виджета пикапа
+    FORCEINLINE void SetAmmoIcon(UTexture2D* Icon) { AmmoItem = Icon; }
 
     /** Вызывается из класса AShooterCharacter */
     void StartItemCurve(AShooterCharacter* Char, bool bForcePlaySound = false);
