@@ -70,6 +70,18 @@ struct FWeaponDataTable : public FTableRowBase
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UTexture2D* CrosshairsTop;
+
+    /** Скорострельность автоматического оружия */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float AutoFireRate;
+
+    /** Вспышка, созданная в BarrelSocket */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class UParticleSystem* MuzzleFlash;
+
+    /** Рандомизированный звуковой сигнал выстрела */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    USoundCue* FireSound;
 };
 
 /**
@@ -146,6 +158,18 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
     UTexture2D* CrosshairsTop;
 
+    /** Скорость, с которой происходит автоматический огонь */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+    float AutoFireRate;
+
+    /** Система частиц, порожденная в BarrelSocket */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+    UParticleSystem* MuzzleFlash;
+
+    /** Звук, воспроизводимый при выстреле из оружия */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+    USoundCue* FireSound;
+
 public:
 
     /** Добавляет импульс оружию */
@@ -163,6 +187,9 @@ public:
     FORCEINLINE void SetReloadMontageSection(FName Name) { ReloadMontageSection = Name; }
     FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
     FORCEINLINE void SetClipBoneName(FName Name) { ClipBoneName = Name; }
+    FORCEINLINE float GetAutoFireRate() const { return AutoFireRate; }
+    FORCEINLINE UParticleSystem* GetMuzzleFlash() const { return MuzzleFlash; }
+    FORCEINLINE USoundCue* GetFireSound() const { return FireSound; }
 
     void ReloadAmmo(int32 Amount);
 

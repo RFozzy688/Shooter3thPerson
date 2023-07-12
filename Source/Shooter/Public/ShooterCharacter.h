@@ -164,12 +164,12 @@ private:
     class UCameraComponent* FollowCamera;
 
     /** Рандомизированный звуковой сигнал выстрела */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
-    class USoundCue* FireSound;
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    //class USoundCue* FireSound;
 
     /** Вспышка, созданная в BarrelSocket */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
-    class UParticleSystem* MuzzleFlash;
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    //class UParticleSystem* MuzzleFlash;
 
     /** Монтаж для стрельбы из оружия */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -249,7 +249,7 @@ private:
     bool bShouldFire;
 
     /** Скорострельность автоматического оружия */
-    float AutomaticFireRate;
+    //float AutomaticFireRate;
 
     /** Устанавливает таймер между выстрелами */
     FTimerHandle AutoFireTimer;
