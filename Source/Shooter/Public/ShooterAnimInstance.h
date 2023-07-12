@@ -129,4 +129,8 @@ private:
     /** Тип оружия для текущего экипированного оружия */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     EWeaponType EquippedWeaponType;
+
+    /** Правда, если не перезаряжать и не экипировать */
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    bool bShouldUseFABRIK;
 };
