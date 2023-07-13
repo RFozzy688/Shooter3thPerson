@@ -82,6 +82,9 @@ struct FWeaponDataTable : public FTableRowBase
     /** –андомизированный звуковой сигнал выстрела */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     USoundCue* FireSound;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FName BoneToHide;
 };
 
 /**
@@ -101,6 +104,7 @@ protected:
     void StopFalling();
 
     virtual void OnConstruction(const FTransform& Transform) override;
+    virtual void BeginPlay() override;
 
 private:
 
@@ -169,6 +173,10 @@ private:
     /** «вук, воспроизводимый при выстреле из оружи€ */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
     USoundCue* FireSound;
+
+    /** Ќазвание кости, которую нужно скрыть на оружейной сетке. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+    FName BoneToHide;
 
 public:
 
