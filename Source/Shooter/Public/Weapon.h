@@ -106,6 +106,9 @@ protected:
     virtual void OnConstruction(const FTransform& Transform) override;
     virtual void BeginPlay() override;
 
+    void FinishMovingSlide();
+    void UpdateSlideDisplacement();
+
 private:
 
     FTimerHandle ThrowWeaponTimer;
@@ -178,6 +181,37 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
     FName BoneToHide;
 
+    /** Величина, на которую затвор отодвигается назад во время стрельбы из пистолета */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float SlideDisplacement;
+
+    /** Кривая смещения затвора */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    UCurveFloat* SlideDisplacementCurve;
+
+    /** Дескриптор таймера для обновления SlideDisplacement */
+    FTimerHandle SlideTimer;
+
+    /** Время смещения затвора при стрельбе из пистолета */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float SlideDisplacementTime;
+
+    /** Правда при перемещении затвора пистолета */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    bool bMovingSlide;
+
+    /** Максимальное расстояние для слайда на пистолете */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float MaxSlideDisplacement;
+
+    /** Максимальное вращение для отдачи пистолета */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float MaxRecoilRotation;
+
+    /** Величина вращения пистолета во время стрельбы из пистолета */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float RecoilRotation;
+
 public:
 
     /** Добавляет импульс оружию */
@@ -198,6 +232,8 @@ public:
     FORCEINLINE float GetAutoFireRate() const { return AutoFireRate; }
     FORCEINLINE UParticleSystem* GetMuzzleFlash() const { return MuzzleFlash; }
     FORCEINLINE USoundCue* GetFireSound() const { return FireSound; }
+
+    void StartSlideTimer();
 
     void ReloadAmmo(int32 Amount);
 
